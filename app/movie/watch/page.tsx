@@ -137,7 +137,7 @@ function WatchContent() {
       "name": movieTitle,
       "alternateName": `Nonton ${movieTitle} Sub Indo`,
       "description": video.description || `Nonton ${movieTitle} subtitle Indonesia online gratis di EMOVIES`,
-      "image": video.poster_url || video.thumbnail_url || video.backdrop_url || "https://emovies.com/emo.png",
+      "image": video.poster_url || video.thumbnail_url || video.backdrop_url || "https://emovies.elproject.studio/emo.png",
       "datePublished": video.year?.toString() || "2024",
       "genre": video.genre ? video.genre.split(',').map((g: string) => g.trim()) : undefined,
       "aggregateRating": (video.score || video.imdb_score) ? {
@@ -148,7 +148,7 @@ function WatchContent() {
       } : undefined,
       "potentialAction": {
         "@type": "WatchAction",
-        "target": typeof window !== 'undefined' ? window.location.href : `https://emovies.com/movie/watch?id=${video.id}`
+        "target": typeof window !== 'undefined' ? window.location.href : `https://emovies.elproject.studio/movie/watch?id=${video.id}`
       }
     };
 

@@ -19,8 +19,10 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://emovies.elproject.studio";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://emovies.com"),
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
   },
@@ -52,7 +54,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "EMOVIES - Nonton Film & TV Series Sub Indo Streaming Gratis",
     description: "Nonton jutaan Film dan TV Series gratis dengan subtitle Indonesia. Streaming film aksi, horor, anime, komedi, dan drama terlengkap.",
-    url: "https://emovies.com",
+    url: SITE_URL,
     siteName: "EMOVIES",
     images: [
       {
@@ -89,24 +91,24 @@ const structuredData = {
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://emovies.com/#website",
-      "url": "https://emovies.com",
+      "@id": `${SITE_URL}/#website`,
+      "url": SITE_URL,
       "name": "EMOVIES",
       "alternateName": ["EMOVIES Streaming", "EMOVIES Sub Indo"],
       "description": "Nonton Film dan TV Series Streaming Sub Indo Gratis Terlengkap",
       "inLanguage": "id-ID",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://emovies.com/?search={search_term_string}",
+        "target": `${SITE_URL}/?search={search_term_string}`,
         "query-input": "required name=search_term_string"
       }
     },
     {
       "@type": "Organization",
-      "@id": "https://emovies.com/#organization",
+      "@id": `${SITE_URL}/#organization`,
       "name": "EMOVIES",
-      "url": "https://emovies.com",
-      "logo": "https://emovies.com/emo.png"
+      "url": SITE_URL,
+      "logo": `${SITE_URL}/emo.png`
     }
   ]
 };
