@@ -4,16 +4,30 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/generate-sitemap.js && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/screen-orientation": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
+    "@capacitor/toast": "^8.0.1",
+    "@supabase/supabase-js": "^2.117.3",
+    "clsx": "^2.1.1",
+    "dotenv": "^18.0.7",
+    "framer-motion": "^14.0.0",
+    "lucide-react": "^1.53.0",
     "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -23,5 +37,10 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@12.10.1"
+  "packageManager": "pnpm@12.10.1",
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

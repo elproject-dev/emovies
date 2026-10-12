@@ -1,0 +1,30 @@
+import { MetadataRoute } from 'next';
+
+export const dynamic = "force-static";
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = 'https://emovies.com'; // Ganti dengan URL domain Anda nantinya
+
+  return [
+    {
+      url: baseUrl,
+      lastModified: new Date(),
+      changeFrequency: 'always',
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}/?type=movie`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/?type=tv`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    // Anda bisa memodifikasi kode ini untuk fetch data dari Supabase 
+    // agar sitemap-nya otomatis memuat URL semua film (e.g., /movie/123)
+  ];
+}

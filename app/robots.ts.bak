@@ -1,0 +1,12 @@
+import { MetadataRoute } from 'next';
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: {
+      userAgent: '*',
+      allow: '/',
+      disallow: ['/admin/', '/private/'], // Sesuaikan jika ada halaman yang ingin disembunyikan dari Google
+    },
+    sitemap: 'https://emovies.com/sitemap.xml', // Ganti dengan URL website asli
+  };
+}

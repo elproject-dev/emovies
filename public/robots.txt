@@ -1,0 +1,10 @@
+# EMOVIES Robots.txt
+# Izinkan perayap mesin pencari Google, Bing, Yahoo, Yandex
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /actions/
+
+# Lokasi Peta Situs (Sitemap)
+Sitemap: https://emovies.com/sitemap.xml
