@@ -51,6 +51,15 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
   },
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/icon.png",
+  },
   openGraph: {
     title: "EMOVIES - Nonton Film & TV Series Sub Indo Streaming Gratis",
     description: "Nonton jutaan Film dan TV Series gratis dengan subtitle Indonesia. Streaming film aksi, horor, anime, komedi, dan drama terlengkap.",
@@ -58,10 +67,10 @@ export const metadata: Metadata = {
     siteName: "EMOVIES",
     images: [
       {
-        url: "/emo.png",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "EMOVIES Streaming Sub Indo",
+        alt: "EMOVIES - Nonton Film & TV Series Sub Indo Streaming Gratis",
       },
     ],
     locale: "id_ID",
@@ -71,7 +80,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EMOVIES - Nonton Film & TV Series Sub Indo Streaming Gratis",
     description: "Nonton jutaan Film dan TV Series gratis dengan subtitle Indonesia.",
-    images: ["/emo.png"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -108,7 +117,13 @@ const structuredData = {
       "@id": `${SITE_URL}/#organization`,
       "name": "EMOVIES",
       "url": SITE_URL,
-      "logo": `${SITE_URL}/emo.png`
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${SITE_URL}/emo.png`,
+        "width": 400,
+        "height": 400,
+        "caption": "EMOVIES Logo"
+      }
     }
   ]
 };
