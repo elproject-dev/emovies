@@ -1,0 +1,131 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "EMOVIES",
+    "identifier": "https://emovies.elproject.studio",
+    "documentationUrl": "https://emovies.elproject.studio",
+    "logoUrl": "https://emovies.elproject.studio/emo.png"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:emovies.elproject.studio:catalog:main",
+      "displayName": "EMOVIES Entertainment Discovery Catalog",
+      "type": "text/html",
+      "description": "Platform streaming dan katalog database film dan serial TV terlengkap dengan subtitle Indonesia, rating, sinopsis, dan navigasi ramah agen AI.",
+      "url": "https://emovies.elproject.studio/",
+      "version": "1.0.0",
+      "tags": [
+        "movies",
+        "tv-series",
+        "streaming",
+        "film-sub-indo",
+        "entertainment",
+        "cinema",
+        "catalog"
+      ],
+      "representativeQueries": [
+        "nonton film streaming subtitle indonesia gratis",
+        "rekomendasi serial tv dan drakor sub indo terbaru",
+        "katalog film bioskop online terlengkap",
+        "cari film trending hari ini"
+      ],
+      "capabilities": [
+        "browse_catalog",
+        "filter_categories",
+        "view_trending"
+      ],
+      "updatedAt": "2026-10-12T12:00:00Z",
+      "publisher": {
+        "identifier": "https://emovies.elproject.studio",
+        "displayName": "EMOVIES"
+      }
+    },
+    {
+      "identifier": "urn:air:emovies.elproject.studio:search:movies",
+      "displayName": "EMOVIES Search & Query Endpoint",
+      "type": "text/html",
+      "description": "Fitur pencarian instan untuk menemukan film dan serial TV berdasarkan judul, genre, atau kata kunci.",
+      "url": "https://emovies.elproject.studio/?search={search_term_string}",
+      "version": "1.0.0",
+      "tags": [
+        "search",
+        "find-movie",
+        "film-lookup",
+        "query"
+      ],
+      "representativeQueries": [
+        "cari film aksi superhero subtitle indonesia",
+        "cari film horor indonesia terbaru",
+        "temukan film berdasarkan judul di emovies",
+        "search trending drama series"
+      ],
+      "capabilities": [
+        "search_by_title",
+        "search_by_keyword"
+      ],
+      "updatedAt": "2026-10-12T12:00:00Z",
+      "publisher": {
+        "identifier": "https://emovies.elproject.studio",
+        "displayName": "EMOVIES"
+      }
+    },
+    {
+      "identifier": "urn:air:emovies.elproject.studio:player:watch",
+      "displayName": "EMOVIES Streaming Video Player",
+      "type": "text/html",
+      "description": "Halaman pemutar streaming video untuk menonton film dan serial TV secara langsung dengan dukungan multi-server cepat dan subtitle Indonesia.",
+      "url": "https://emovies.elproject.studio/movie/watch?id={id}",
+      "version": "1.0.0",
+      "tags": [
+        "watch",
+        "player",
+        "streaming",
+        "video",
+        "sub-indo"
+      ],
+      "representativeQueries": [
+        "tonton film streaming sekarang secara gratis",
+        "streaming film sub indo kualitas jernih",
+        "nonton episode tv series online"
+      ],
+      "capabilities": [
+        "stream_video",
+        "multi_server_playback",
+        "watch_online"
+      ],
+      "updatedAt": "2026-10-12T12:00:00Z",
+      "publisher": {
+        "identifier": "https://emovies.elproject.studio",
+        "displayName": "EMOVIES"
+      }
+    },
+    {
+      "identifier": "urn:air:emovies.elproject.studio:feed:sitemap",
+      "displayName": "EMOVIES Index & Sitemap Feed",
+      "type": "application/xml",
+      "description": "Feed peta situs XML terstruktur yang memuat seluruh URL film, serial TV, dan laman kategori terkini untuk pengindeksan agen dan mesin pencari.",
+      "url": "https://emovies.elproject.studio/sitemap.xml",
+      "version": "1.0.0",
+      "tags": [
+        "sitemap",
+        "index",
+        "seo",
+        "metadata"
+      ],
+      "representativeQueries": [
+        "daftar semua url film di emovies",
+        "sitemap xml film emovies",
+        "crawler index link emovies"
+      ],
+      "capabilities": [
+        "crawl_all_movies",
+        "content_indexing"
+      ],
+      "updatedAt": "2026-10-12T12:00:00Z",
+      "publisher": {
+        "identifier": "https://emovies.elproject.studio",
+        "displayName": "EMOVIES"
+      }
+    }
+  ]
+}

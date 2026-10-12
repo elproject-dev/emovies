@@ -8,3 +8,10 @@ Disallow: /actions/
 
 # Lokasi Peta Situs (Sitemap)
 Sitemap: https://emovies.elproject.studio/sitemap.xml
+
+# Agentic Resource Discovery & AI Catalog
+# https://agenticresourcediscovery.org/spec/
+# https://ai-catalog.io/
+Allow: /.well-known/ai-catalog.json
+Allow: /.well-known/ard.json
+Allow: /ai-catalog.json
