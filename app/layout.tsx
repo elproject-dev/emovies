@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import Topbar from "@/components/Topbar";
 import { AppBackButtonHandler } from "@/components/AppBackButtonHandler";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import WebMCPProvider from "@/components/WebMCPProvider";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -149,6 +150,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning className={`${outfit.className} min-h-full flex flex-col bg-[#0a0a0a] text-white`}>
         <GoogleAnalytics />
         <AppBackButtonHandler />
+        <WebMCPProvider />
         <Topbar />
         <main className="flex-1">
           {children}

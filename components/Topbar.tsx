@@ -217,14 +217,22 @@ export default function Topbar() {
                 }
               }}
               className="relative"
+              {...({
+                toolname: "search_movies",
+                tooldescription: "Cari film dan serial TV berdasarkan judul, aktor, atau genre di katalog EMOVIES.",
+              } as Record<string, string>)}
             >
               <input
                 type="text"
+                name="query"
                 placeholder="What do you want to watch?"
                 className="w-full h-12 pl-12 pr-4 bg-[#1a1a1a] text-white text-base md:text-lg border-2 border-gray-800 focus:border-green-500 focus:outline-none focus:ring-0 transition-colors placeholder-gray-600 font-medium rounded-lg"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
+                {...({
+                  toolparamdescription: "Judul atau kata kunci film yang ingin dicari",
+                } as Record<string, string>)}
               />
               <button
                 type="submit"
