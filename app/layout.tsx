@@ -53,12 +53,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
       { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/emo.png", type: "image/png", sizes: "400x400" },
     ],
     apple: [
       { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: "/icon.png",
+    shortcut: "/favicon.ico",
   },
   openGraph: {
     title: "EMOVIES - Nonton Film & TV Series Sub Indo Streaming Gratis",
