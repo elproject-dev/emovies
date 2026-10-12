@@ -12,6 +12,10 @@ Sitemap: https://emovies.elproject.studio/sitemap.xml
 # Agentic Resource Discovery & AI Catalog
 # https://agenticresourcediscovery.org/spec/
 # https://ai-catalog.io/
+# https://llmstxt.org/
 Allow: /.well-known/ai-catalog.json
 Allow: /.well-known/ard.json
 Allow: /ai-catalog.json
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/llms.txt

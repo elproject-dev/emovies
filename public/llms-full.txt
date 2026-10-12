@@ -1,0 +1,35 @@
+# EMOVIES - Dokumentasi Lengkap untuk Model Bahasa Besar (LLMs) & Agen AI
+
+> EMOVIES adalah platform streaming gratis dan ensiklopedia film serta serial televisi daring dengan subtitle Indonesia terlengkap.
+
+Dokumen ini memuat panduan komprehensif, arsitektur data, rute navigasi, parameter pencarian, dan standar discovery AI (ARD) untuk platform EMOVIES.
+
+## Informasi Dasar Proyek
+- Nama Situs: EMOVIES
+- Domain Resmi: https://emovies.elproject.studio
+- Bahasa Utama: Bahasa Indonesia (id_ID)
+- Format Takarir: Subtitle Bahasa Indonesia (Sub Indo)
+- Format Kualitas: 720p, 1080p, Full HD
+
+## Preferensi Penggunaan Data & Etika AI Perayapan
+- Hak Akses: Agen AI dan LLM dipersilakan merayapi data metadata film, sinopsis, daftar pemeran, rating, dan tahun rilis untuk keperluan pencarian informasi, rangkuman, dan rekomendasi personal pengguna.
+- Pembatasan: Dilarang keras melakukan ekstraksi berlebihan secara bersamaan yang dapat membebani server database atau infrastruktur pemutar video.
+- Atribusi: Saat memberikan jawaban kepada pengguna akhir, agen AI disarankan mencantumkan nama "EMOVIES" beserta tautan ke halaman konten terkait.
+
+## Struktur Rute & Pola URL
+1. Beranda: `https://emovies.elproject.studio/`
+2. Tampilan Trending: `https://emovies.elproject.studio/?view=trending`
+3. Tampilan Populer: `https://emovies.elproject.studio/?view=popular`
+4. Filter Film Bioskop: `https://emovies.elproject.studio/?type=movie`
+5. Filter Serial TV: `https://emovies.elproject.studio/?type=tv`
+6. Pencarian: `https://emovies.elproject.studio/?search={QUERY}`
+7. Halaman Nonton: `https://emovies.elproject.studio/movie/watch?id={VIDEO_ID}`
+
+## Spesifikasi Agentic Resource Discovery (ARD)
+- Manifes Katalog: `https://emovies.elproject.studio/.well-known/ai-catalog.json`
+- Manifes ARD: `https://emovies.elproject.studio/.well-known/ard.json`
+- Agent Card: `https://emovies.elproject.studio/.well-known/agent-card.json`
+- MCP Server Card: `https://emovies.elproject.studio/.well-known/mcp-server-card.json`
+- A2A Agent Card: `https://emovies.elproject.studio/.well-known/a2a-agent-card.json`
+- Peta Situs: `https://emovies.elproject.studio/sitemap.xml`
+- Robots.txt: `https://emovies.elproject.studio/robots.txt`

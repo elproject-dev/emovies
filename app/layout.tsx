@@ -140,6 +140,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="ai-catalog" type="application/ai-catalog+json" href="/.well-known/ai-catalog.json" />
         <link rel="alternate" type="application/json" href="/.well-known/ard.json" title="Agentic Resource Discovery" />
+        <link rel="llms-txt" type="text/markdown" href="/llms.txt" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
