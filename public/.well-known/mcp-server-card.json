@@ -1,0 +1,34 @@
+{
+  "name": "emovies-mcp-server",
+  "version": "1.0.0",
+  "title": "EMOVIES Model Context Protocol Server",
+  "description": "MCP Server providing movie search and streaming catalog tools for AI models.",
+  "transport": {
+    "type": "http",
+    "endpoint": "https://emovies.elproject.studio"
+  },
+  "tools": [
+    {
+      "name": "search_movies",
+      "description": "Mencari film dan serial TV berdasarkan judul atau genre.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": { "type": "string", "description": "Judul film atau serial" }
+        },
+        "required": ["query"]
+      }
+    },
+    {
+      "name": "get_watch_url",
+      "description": "Mendapatkan URL streaming pemutar film di EMOVIES.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "ID film dari database EMOVIES" }
+        },
+        "required": ["id"]
+      }
+    }
+  ]
+}

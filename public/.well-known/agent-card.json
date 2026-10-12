@@ -1,0 +1,15 @@
+{
+  "name": "EMOVIES Streaming Assistant",
+  "version": "1.0.0",
+  "description": "Asisten AI untuk rekomendasi film, serial drama, streaming gratis sub Indo, dan pencarian metadata bioskop online.",
+  "url": "https://emovies.elproject.studio",
+  "capabilities": {
+    "search": true,
+    "streaming": true,
+    "recommendations": true
+  },
+  "provider": {
+    "name": "EMOVIES",
+    "url": "https://emovies.elproject.studio"
+  }
+}

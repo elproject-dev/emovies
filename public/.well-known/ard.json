@@ -8,31 +8,29 @@
   },
   "entries": [
     {
-      "identifier": "urn:air:emovies.elproject.studio:catalog:main",
-      "displayName": "EMOVIES Entertainment Discovery Catalog",
-      "type": "text/html",
-      "description": "Platform streaming dan katalog database film dan serial TV terlengkap dengan subtitle Indonesia, rating, sinopsis, dan navigasi ramah agen AI.",
-      "url": "https://emovies.elproject.studio/",
+      "identifier": "urn:air:emovies.elproject.studio:agent:movie-assistant",
+      "displayName": "EMOVIES Streaming & Discovery Agent",
+      "type": "application/agent-card+json",
+      "description": "Asisten AI untuk rekomendasi film, streaming gratis subtitle Indonesia, dan pencarian katalog bioskop online.",
+      "url": "https://emovies.elproject.studio/.well-known/agent-card.json",
       "version": "1.0.0",
       "tags": [
         "movies",
-        "tv-series",
         "streaming",
-        "film-sub-indo",
-        "entertainment",
-        "cinema",
-        "catalog"
+        "agent",
+        "sub-indo",
+        "entertainment"
       ],
       "representativeQueries": [
         "nonton film streaming subtitle indonesia gratis",
-        "rekomendasi serial tv dan drakor sub indo terbaru",
+        "rekomendasi serial tv dan drama sub indo terbaru",
         "katalog film bioskop online terlengkap",
         "cari film trending hari ini"
       ],
       "capabilities": [
-        "browse_catalog",
-        "filter_categories",
-        "view_trending"
+        "movie_search",
+        "catalog_browse",
+        "streaming_lookup"
       ],
       "updatedAt": "2026-10-12T12:00:00Z",
       "publisher": {
@@ -41,17 +39,17 @@
       }
     },
     {
-      "identifier": "urn:air:emovies.elproject.studio:search:movies",
-      "displayName": "EMOVIES Search & Query Endpoint",
-      "type": "text/html",
-      "description": "Fitur pencarian instan untuk menemukan film dan serial TV berdasarkan judul, genre, atau kata kunci.",
-      "url": "https://emovies.elproject.studio/?search={search_term_string}",
+      "identifier": "urn:air:emovies.elproject.studio:mcp:movie-search",
+      "displayName": "EMOVIES Model Context Protocol Server",
+      "type": "application/mcp-server-card+json",
+      "description": "Server MCP penyedia tool pencarian film, serial TV, dan link streaming bagi model AI dan autonomous agent.",
+      "url": "https://emovies.elproject.studio/.well-known/mcp-server-card.json",
       "version": "1.0.0",
       "tags": [
-        "search",
-        "find-movie",
-        "film-lookup",
-        "query"
+        "mcp",
+        "movie-search",
+        "tools",
+        "streaming"
       ],
       "representativeQueries": [
         "cari film aksi superhero subtitle indonesia",
@@ -60,8 +58,8 @@
         "search trending drama series"
       ],
       "capabilities": [
-        "search_by_title",
-        "search_by_keyword"
+        "search_movies",
+        "get_watch_url"
       ],
       "updatedAt": "2026-10-12T12:00:00Z",
       "publisher": {
@@ -70,18 +68,17 @@
       }
     },
     {
-      "identifier": "urn:air:emovies.elproject.studio:player:watch",
-      "displayName": "EMOVIES Streaming Video Player",
-      "type": "text/html",
-      "description": "Halaman pemutar streaming video untuk menonton film dan serial TV secara langsung dengan dukungan multi-server cepat dan subtitle Indonesia.",
-      "url": "https://emovies.elproject.studio/movie/watch?id={id}",
+      "identifier": "urn:air:emovies.elproject.studio:a2a:catalog-service",
+      "displayName": "EMOVIES A2A Agent Card",
+      "type": "application/a2a-agent-card+json",
+      "description": "Kartu Agent-to-Agent untuk komunikasi dan orkestrasi otomatis data katalog media streaming antar-agen.",
+      "url": "https://emovies.elproject.studio/.well-known/a2a-agent-card.json",
       "version": "1.0.0",
       "tags": [
-        "watch",
-        "player",
-        "streaming",
-        "video",
-        "sub-indo"
+        "a2a",
+        "agent",
+        "movie-catalog",
+        "media"
       ],
       "representativeQueries": [
         "tonton film streaming sekarang secara gratis",
@@ -92,34 +89,6 @@
         "stream_video",
         "multi_server_playback",
         "watch_online"
-      ],
-      "updatedAt": "2026-10-12T12:00:00Z",
-      "publisher": {
-        "identifier": "https://emovies.elproject.studio",
-        "displayName": "EMOVIES"
-      }
-    },
-    {
-      "identifier": "urn:air:emovies.elproject.studio:feed:sitemap",
-      "displayName": "EMOVIES Index & Sitemap Feed",
-      "type": "application/xml",
-      "description": "Feed peta situs XML terstruktur yang memuat seluruh URL film, serial TV, dan laman kategori terkini untuk pengindeksan agen dan mesin pencari.",
-      "url": "https://emovies.elproject.studio/sitemap.xml",
-      "version": "1.0.0",
-      "tags": [
-        "sitemap",
-        "index",
-        "seo",
-        "metadata"
-      ],
-      "representativeQueries": [
-        "daftar semua url film di emovies",
-        "sitemap xml film emovies",
-        "crawler index link emovies"
-      ],
-      "capabilities": [
-        "crawl_all_movies",
-        "content_indexing"
       ],
       "updatedAt": "2026-10-12T12:00:00Z",
       "publisher": {

@@ -1,0 +1,11 @@
+{
+  "name": "emovies-a2a-agent",
+  "version": "1.0.0",
+  "description": "Agent-to-Agent discovery card for automated movie & series catalog discovery.",
+  "endpoint": "https://emovies.elproject.studio",
+  "skills": [
+    "movie-recommendation",
+    "catalog-lookup",
+    "stream-link-resolution"
+  ]
+}
