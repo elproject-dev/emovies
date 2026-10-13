@@ -7,14 +7,23 @@ import Link from 'next/link';
 import { Capacitor } from '@capacitor/core';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 import { StatusBar } from '@capacitor/status-bar';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { LoadingSpinner } from '@/components/loading-spinner';
 import { trackWatchMovie } from '@/lib/analytics';
 
 function WatchContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const id = searchParams?.get('id');
   const shouldPlay = searchParams?.get('play') === 'true';
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/');
+    }
+  };
 
   const [video, setVideo] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -102,7 +111,7 @@ function WatchContent() {
     };
   }, []);
 
-  // SEO: Update dynamic document title, meta description & Schema.org JSON-LD
+  // SEO: Dynamic document title, meta description & Schema.org JSON-LD
   const movieTitle = video?.title || '';
   const movieYear = video?.year ? ` (${video.year})` : '';
   const pageTitle = movieTitle
@@ -113,79 +122,32 @@ function WatchContent() {
     ? `Nonton ${movieTitle}${movieYear} sub indo full movie streaming gratis di EMOVIES. ${pageSnippet}`
     : 'Nonton jutaan Film dan TV Series gratis subtitle Indonesia dengan streaming lancar dan kualitas jernih.';
 
+  const isTv = video?.content_type === 'tv' || video?.season;
+  const schemaData = video ? {
+    "@context": "https://schema.org",
+    "@type": isTv ? "TVSeries" : "Movie",
+    "name": movieTitle,
+    "alternateName": `Nonton ${movieTitle} Sub Indo`,
+    "description": video.description || `Nonton ${movieTitle} subtitle Indonesia online gratis di EMOVIES`,
+    "image": video.poster_url || video.thumbnail_url || video.backdrop_url || "https://emovies.elproject.studio/icon.png",
+    "datePublished": video.year?.toString() || "2024",
+    "genre": video.genre ? video.genre.split(',').map((g: string) => g.trim()) : undefined,
+    "aggregateRating": (video.score || video.imdb_score) ? {
+      "@type": "AggregateRating",
+      "ratingValue": Number(video.score || video.imdb_score).toFixed(1),
+      "bestRating": "10",
+      "ratingCount": Math.max(15, (video.view_count || 1) * 8)
+    } : undefined,
+    "potentialAction": {
+      "@type": "WatchAction",
+      "target": `https://emovies.elproject.studio/movie/watch?id=${video.id}`
+    }
+  } : null;
+
   useEffect(() => {
     if (!video?.title) return;
-
-    // Force update <title> DOM element for crawlers and document.title
-    const titleEl = document.querySelector('title');
-    if (titleEl) {
-      titleEl.innerText = pageTitle;
-      titleEl.textContent = pageTitle;
-    }
     document.title = pageTitle;
-
-    // Deduplicate and update meta description
-    const allMetaDescs = document.querySelectorAll('meta[name="description"]');
-    if (allMetaDescs.length > 0) {
-      allMetaDescs[0].setAttribute('content', metaDescContent);
-      for (let i = 1; i < allMetaDescs.length; i++) {
-        allMetaDescs[i].remove();
-      }
-    } else {
-      const meta = document.createElement('meta');
-      meta.name = 'description';
-      meta.content = metaDescContent;
-      document.head.appendChild(meta);
-    }
-
-    // Dynamic canonical link
-    let canonicalLink = document.querySelector('link[rel="canonical"]');
-    if (!canonicalLink) {
-      canonicalLink = document.createElement('link');
-      canonicalLink.setAttribute('rel', 'canonical');
-      document.head.appendChild(canonicalLink);
-    }
-    canonicalLink.setAttribute('href', `https://emovies.elproject.studio/movie/watch?id=${video.id}`);
-
-    // Dynamic Schema.org JSON-LD
-    const scriptId = 'movie-rich-snippet';
-    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
-    if (!script) {
-      script = document.createElement('script');
-      script.id = scriptId;
-      script.type = 'application/ld+json';
-      document.head.appendChild(script);
-    }
-
-    const isTv = video.content_type === 'tv' || video.season;
-    const schemaData = {
-      "@context": "https://schema.org",
-      "@type": isTv ? "TVSeries" : "Movie",
-      "name": movieTitle,
-      "alternateName": `Nonton ${movieTitle} Sub Indo`,
-      "description": video.description || `Nonton ${movieTitle} subtitle Indonesia online gratis di EMOVIES`,
-      "image": video.poster_url || video.thumbnail_url || video.backdrop_url || "https://emovies.elproject.studio/emo.png",
-      "datePublished": video.year?.toString() || "2024",
-      "genre": video.genre ? video.genre.split(',').map((g: string) => g.trim()) : undefined,
-      "aggregateRating": (video.score || video.imdb_score) ? {
-        "@type": "AggregateRating",
-        "ratingValue": Number(video.score || video.imdb_score).toFixed(1),
-        "bestRating": "10",
-        "ratingCount": Math.max(15, (video.view_count || 1) * 8)
-      } : undefined,
-      "potentialAction": {
-        "@type": "WatchAction",
-        "target": typeof window !== 'undefined' ? window.location.href : `https://emovies.elproject.studio/movie/watch?id=${video.id}`
-      }
-    };
-
-    script.text = JSON.stringify(schemaData);
-
-    return () => {
-      const s = document.getElementById(scriptId);
-      if (s) s.remove();
-    };
-  }, [video]);
+  }, [video?.title, pageTitle]);
   const [serverUrls, setServerUrls] = useState<{ name: string, url: string }[]>([
     { name: 'VidSrc', url: 'https://vidsrc.me/embed/' },
     { name: 'CineSrc', url: 'https://cinesrc.st/embed/' }
@@ -357,7 +319,15 @@ function WatchContent() {
       <div className="w-full min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center text-white">
         <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
         <h1 className="text-2xl font-bold">Movie not found</h1>
-        <Link href="/" className="mt-4 text-green-400 hover:underline">Return to Home</Link>
+        <div className="flex items-center gap-4 mt-4">
+          <button onClick={handleBack} className="text-green-400 hover:underline cursor-pointer">
+            Kembali
+          </button>
+          <span className="text-gray-600">•</span>
+          <Link href="/" className="text-gray-400 hover:underline">
+            Ke Halaman Utama
+          </Link>
+        </div>
       </div>
     );
   }
@@ -391,6 +361,12 @@ function WatchContent() {
           <title>{pageTitle}</title>
           <meta name="description" content={metaDescContent} />
           <link rel="canonical" href={`https://emovies.elproject.studio/movie/watch?id=${video.id}`} />
+          {schemaData && (
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+            />
+          )}
         </>
       )}
       {!isPlaying ? (
@@ -409,12 +385,14 @@ function WatchContent() {
 
           {/* Frame Tombol Kembali (Terpisah dari Judul agar bisa diatur tingginya) */}
           <div className="absolute top-[12vh] md:top-[15vh] left-0 right-0 mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 z-20 pointer-events-none">
-            <Link
-              href="/"
-              className="inline-flex w-12 h-12 rounded-full bg-black/60 hover:bg-green-500 hover:text-black flex items-center justify-center transition-all border border-white/10 hover:border-green-400 backdrop-blur-md pointer-events-auto group"
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label="Kembali ke halaman sebelumnya"
+              className="inline-flex w-12 h-12 rounded-full bg-black/60 hover:bg-green-500 hover:text-black flex items-center justify-center transition-all border border-white/10 hover:border-green-400 backdrop-blur-md pointer-events-auto group cursor-pointer"
             >
               <ArrowLeft className="w-6 h-6 text-white group-hover:text-black transition-colors" />
-            </Link>
+            </button>
           </div>
 
           {/* Content */}

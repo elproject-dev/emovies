@@ -309,13 +309,12 @@ const selectHeroVideos = (videoList: any[]) => {
   if (videoList.length === 0) return [];
   const featuredPool = videoList.filter((v: any) => v.is_featured === true);
   if (featuredPool.length >= 3) {
-    return [...featuredPool].sort(() => 0.5 - Math.random()).slice(0, 8);
+    return featuredPool.slice(0, 8);
   } else {
     const backdropVideos = videoList.filter((v: any) => v.backdrop_url && !featuredPool.some((f: any) => f.id === v.id));
-    const randomBackdrops = [...backdropVideos].sort(() => 0.5 - Math.random());
-    const combined = [...featuredPool, ...randomBackdrops].slice(0, 8).sort(() => 0.5 - Math.random());
-    if (combined.length > 0) return combined;
-    return [...videoList].sort(() => 0.5 - Math.random()).slice(0, 8);
+    const combined = [...featuredPool, ...backdropVideos];
+    if (combined.length > 0) return combined.slice(0, 8);
+    return videoList.slice(0, 8);
   }
 };
 
@@ -411,12 +410,11 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
   const manualFeaturedVideos = videos.filter(v => v.is_featured === true);
   const usedIds = new Set<string>(manualFeaturedVideos.map(v => v.id));
 
-  // Row 2: Trending Now — khusus movie, shuffle 30 teratas berdasarkan view_count
+  // Row 2: Trending Now — khusus movie, urutkan berdasarkan view_count
   const trendingPool = [...videos]
     .filter(v => !usedIds.has(v.id) && v.content_type !== 'tv')
     .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
-    .slice(0, 30)
-    .sort(() => 0.5 - Math.random());
+    .slice(0, 15);
   const popularVideos = trendingPool;
   trendingPool.forEach(v => usedIds.add(v.id));
 
@@ -453,7 +451,7 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
 
   return (
     <div className="w-full text-white bg-[#0a0a0a] min-h-screen pb-20">
-      <h1 className="sr-only">EMOVIES - Nonton Film &amp; TV Series Streaming Sub Indo Gratis</h1>
+      <h1 className="sr-only">EMOVIES - Nonton Film & TV Series Streaming Sub Indo Gratis</h1>
       {isLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <LoadingSpinner />
@@ -494,29 +492,179 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
         </div>
       )}
 
-      {/* Rich SEO Content Section for Search Engines & Visitors */}
-      <section className="mt-16 border-t border-gray-800/80 pt-10 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto text-gray-400 text-xs sm:text-sm leading-relaxed">
-        <h2 className="text-base sm:text-xl font-bold text-white mb-3">
-          EMOVIES - Nonton Film &amp; TV Series Streaming Sub Indo Gratis
-        </h2>
-        <p className="mb-4">
-          Selamat datang di <strong>EMOVIES</strong>, platform nonton film dan streaming serial TV online terlengkap dengan subtitle Indonesia gratis. Nikmati jutaan pilihan film bioskop terbaru, drama Korea sub indo, film laga (action), anime terbaru, horor, komedi, dan romance dengan kualitas visual jernih HD hingga 4K serta server streaming cepat tanpa buffering.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 text-gray-300">
-          <div className="bg-[#121212] p-4 rounded-xl border border-gray-800/60">
-            <h3 className="font-semibold text-white text-sm mb-1.5 text-green-400">Streaming Lancar &amp; Cepat</h3>
-            <p className="text-xs text-gray-400">Didukung server berkecepatan tinggi untuk kenyamanan streaming film favorit Anda kapan saja dan di mana saja.</p>
-          </div>
-          <div className="bg-[#121212] p-4 rounded-xl border border-gray-800/60">
-            <h3 className="font-semibold text-white text-sm mb-1.5 text-green-400">Subtitle Indonesia Terlengkap</h3>
-            <p className="text-xs text-gray-400">Seluruh film dan series dilengkapi terjemahan subtitle bahasa Indonesia yang rapi dan akurat.</p>
-          </div>
-          <div className="bg-[#121212] p-4 rounded-xl border border-gray-800/60">
-            <h3 className="font-semibold text-white text-sm mb-1.5 text-green-400">Koleksi Terupdate 2026</h3>
-            <p className="text-xs text-gray-400">Selalu update film box office bioskop terbaru, drakor, serial barat, hingga episode anime yang sedang tayang.</p>
-          </div>
-        </div>
+      {/* High-Authority Professional SEO Section (Visually hidden for clean UI, fully parsed by Search Engines & Screen Readers) */}
+      <section className="sr-only" aria-label="Informasi Lengkap, Direktori Genre, dan Panduan Streaming EMOVIES">
+        <header>
+          <h2>EMOVIES - Platform Nonton Film Bioskop & TV Series Streaming Sub Indo Gratis</h2>
+          <p>
+            Selamat datang di EMOVIES, portal hiburan sinematik digital terlengkap di Indonesia yang menyajikan ribuan koleksi film bioskop box office terbaru dan serial televisi internasional dengan subtitle bahasa Indonesia (Sub Indo) secara gratis. Nikmati tayangan berkualitas jernih mulai dari 720p HD, 1080p Full HD hingga 4K Ultra HD yang didukung oleh infrastruktur multi-server cepat, stabil, dan minim buffering.
+          </p>
+        </header>
+
+        <article>
+          <h3>1. Pusat Nonton Film Online & Bioskop Streaming Terlengkap 2026</h3>
+          <p>
+            EMOVIES menjadi destinasi utama bagi para penikmat film yang menginginkan akses streaming film sub indo secara cepat, praktis, dan tanpa repot. Kami mengkurasi katalog film global dari berbagai industri perfilman terkemuka di dunia:
+          </p>
+          <ul>
+            <li>Film Blockbuster Hollywood: Rilis box office terpopuler dari studio Universal, Warner Bros, Paramount, 20th Century Studios, dan Sony Pictures.</li>
+            <li>Sinema Asia & Lokal: Pilihan film Indonesia terbaru, film laga Mandarin, thriller Korea peraih penghargaan, dan karya sinematik Jepang.</li>
+            <li>Sinema Festival & Independen: Mahakarya film peraih piala Oscar, festival film Cannes, Sundance, dan festival film bergengsi dunia lainnya.</li>
+          </ul>
+          <p>
+            Seluruh film dapat ditonton langsung dari browser tanpa perlu menginstal aplikasi tambahan yang memberatkan perangkat atau mengeluarkan biaya langganan bulanan.
+          </p>
+        </article>
+
+        <article>
+          <h3>2. Direktori Kategori & 18 Genre Sinematik Terfavorit</h3>
+          <p>
+            EMOVIES memudahkan penonton menjelajahi katalog berdasarkan kategori dan genre favorit:
+          </p>
+          <ul>
+            <li><strong>Action (Aksi Laga):</strong> Suguhan pertempuran mendebarkan, kejar-kejaran mobil, baku tembak spektakuler, film pahlawan super Marvel dan DC, serta aksi bela diri bela negara yang memacu adrenalin.</li>
+            <li><strong>Adventure (Petualangan):</strong> Ekspedisi mencari misteri masa lampau, petualangan di rimba liar, perburuan harta karun legendaris, dan eksplorasi dimensi baru.</li>
+            <li><strong>Animation (Animasi):</strong> Film kartun ramah anak, animasi 3D memukau buatan studio papan atas seperti Disney, Pixar, DreamWorks, hingga anime movie bioskop Jepang.</li>
+            <li><strong>Comedy (Komedi):</strong> Lawakan segar pengocok perut, komedi situasi cerdas, parodi menggelitik, dan film romcom penghilang stres setelah seharian beraktivitas.</li>
+            <li><strong>Crime (Kriminalitas):</strong> Penyelidikan kasus detektif jenius, aksi perampokan penuh siasat, dunia gelap sindikat mafia, dan intrik konspirasi penegak hukum.</li>
+            <li><strong>Documentary (Dokumenter):</strong> Eksplorasi sains mendalam, sejarah peradaban manusia, riwayat hidup tokoh dunia, serta keajaiban alam dan satwa liar.</li>
+            <li><strong>Drama:</strong> Perjalanan hidup penuh haru, perjuangan meraih mimpi, konflik keluarga yang emosional, dan dinamika sosial masyarakat yang menyentuh hati.</li>
+            <li><strong>Family (Keluarga):</strong> Tontonan edukatif dan inspiratif yang aman dan menghangatkan suasana saat berkumpul bersama seluruh anggota keluarga.</li>
+            <li><strong>Fantasy (Fantasi):</strong> Petualangan sihir legendaris, mitologi kuno, makhluk mistis seperti naga dan peri, serta kerajaan magis penuh pesona imajinasi.</li>
+            <li><strong>History (Sejarah):</strong> Penggambaran akurat peristiwa penting masa lalu, perang bersejarah, dan biografi tokoh pahlawan revolusioner dunia.</li>
+            <li><strong>Horror (Horor):</strong> Suasana gelap mencekam, rumah berhantu, jumpscare mengejutkan, teror hantu lokal dan supranatural internasional yang menguji nyali.</li>
+            <li><strong>Music (Musik):</strong> Pagelaran konser musik spektakuler, kisah inspiratif musisi dunia, dan film drama musikal dengan lagu-lagu legendaris.</li>
+            <li><strong>Mystery (Misteri):</strong> Teka-teki pembunuhan ganjil, pengungkapan rahasia kelam, dan rangkaian petunjuk dengan akhir cerita yang tak terduga (plot twist).</li>
+            <li><strong>Romance (Romantis):</strong> Perjalanan cinta manis penuh ketulusan, kisah asmara masa muda, hingga cinta sejati yang melewati berbagai rintangan hidup.</li>
+            <li><strong>Sci-Fi (Fiksi Ilmiah):</strong> Eksplorasi luar angkasa tak berbatas, teknologi masa depan, robot kecerdasan buatan (AI), penjelajahan waktu, dan masa depan distopia.</li>
+            <li><strong>Thriller:</strong> Ketegangan psikologis intens yang membuat jantung berdegup kencang, perburuan pembunuh berantai, dan aksi pelarian dari bahaya maut.</li>
+            <li><strong>War (Perang):</strong> Realitas medan pertempuran militer, heroisme prajurit di garis depan, dan sisi kemanusiaan di balik dentuman senjata.</li>
+            <li><strong>Western (Koboi):</strong> Duel senjata cepat di tanah gersang Amerika kuno, perburuan buronan, dan kehidupan koboi yang menantang bahaya.</li>
+          </ul>
+        </article>
+
+        <article>
+          <h3>3. Koleksi Drama Korea (Drakor), Anime Jepang, & TV Series Mancanegara</h3>
+          <p>
+            Bagi pecinta serial bersambung, EMOVIES menyediakan episode terlengkap dengan takarir bahasa Indonesia yang akurat:
+          </p>
+          <ul>
+            <li><strong>Drama Korea (Drakor) Ongoing & Tamat:</strong> Serial komedi romantis, melodrama, thriller hukum, dan sageuk (sejarah kerajaan) dari stasiun televisi tvN, JTBC, SBS, KBS, hingga serial original Netflix.</li>
+            <li><strong>Anime Subtitle Indonesia:</strong> Judul anime musiman (seasonal anime) paling dinantikan mulai dari genre Shonen, Isekai, Seinen, hingga film animasi layar lebar Jepang.</li>
+            <li><strong>Serial TV Barat Terpopuler:</strong> Serial TV berating tinggi dari studio HBO, Amazon Prime Video, Disney+, Apple TV+, dan Netflix dari Season awal hingga Season pemungkas.</li>
+          </ul>
+        </article>
+
+        <article>
+          <h3>4. Keunggulan Teknologi Streaming Video EMOVIES</h3>
+          <p>
+            EMOVIES mengintegrasikan berbagai kemudahan teknis agar proses menonton berjalan menyenangkan:
+          </p>
+          <ul>
+            <li><strong>Penyedia Multi-Server Handal:</strong> Didukung berbagai server embed seperti VidSrc dan CineSrc. Pengguna dapat berganti server pemutar secara instan jika mengalami kendala jaringan.</li>
+            <li><strong>Kualitas Gambar Adaptif:</strong> Menyesuaikan kecepatan internet pengguna secara cerdas, mendukung resolusi 360p, 720p HD hemat kuota, hingga 1080p Full HD dan 4K berkejernihan tinggi.</li>
+            <li><strong>Desain Antarmuka Dark Mode Modern:</strong> Tampilan gelap sinematik yang ramah di mata, tata letak responsif untuk kenyamanan layar sentuh smartphone Android, iOS, tablet, maupun layar PC.</li>
+            <li><strong>Fitur Touch-Lock & Fullscreen:</strong> Tombol kunci layar sentuh di perangkat seluler agar film tidak sengaja terhenti saat tersentuh jari saat menonton mode layar penuh.</li>
+            <li><strong>Dukungan Unduh Subtitle Mandiri:</strong> Menyediakan tombol unduh file subtitle (.SRT) bahasa Indonesia untuk diputar di aplikasi pemutar offline kesayangan Anda.</li>
+          </ul>
+        </article>
+
+        <article>
+          <h3>5. Tanya Jawab Seputar Layanan Streaming EMOVIES (FAQ)</h3>
+          <dl>
+            <dt><strong>Apakah menonton film dan serial TV di EMOVIES benar-benar gratis?</strong></dt>
+            <dd>Ya, seluruh katalog film dan serial televisi di EMOVIES dapat dinikmati 100% gratis tanpa perlu membuat akun, memasukkan kartu kredit, ataupun membayar biaya langganan.</dd>
+
+            <dt><strong>Bagaimana cara mengatasi video yang lambat atau mengalami buffering?</strong></dt>
+            <dd>Pastikan sambungan internet Anda cukup stabil. Jika video masih tersendat, klik menu server di atas pemutar video dan pilih server alternatif seperti CineSrc atau VidSrc.</dd>
+
+            <dt><strong>Apakah semua film di EMOVIES sudah dilengkapi subtitle bahasa Indonesia?</strong></dt>
+            <dd>Benar, hampir semua film dan serial di EMOVIES telah dilengkapi takarir bahasa Indonesia (Sub Indo) yang terpasang otomatis di layar pemutar video.</dd>
+
+            <dt><strong>Seberapa sering koleksi film dan serial di EMOVIES diupdate?</strong></dt>
+            <dd>Koleksi kami diperbarui setiap hari dengan judul-judul film bioskop box office 2026 terbaru dan episode drama berseri yang baru saja ditayangkan.</dd>
+
+            <dt><strong>Apakah EMOVIES bisa dibuka di ponsel HP Android dan iPhone?</strong></dt>
+            <dd>Tentu saja. EMOVIES dirancang sepenuhnya mobile-friendly untuk kenyamanan menonton di layar ponsel pintar Android, iPhone, iPad, tablet, dan PC laptop.</dd>
+
+            <dt><strong>Bagaimana cara mencari judul film atau aktor kesukaan di EMOVIES?</strong></dt>
+            <dd>Gunakan ikon kaca pembesar (Pencarian) di bagian navigasi atas. Ketikkan judul film, nama aktor, sutradara, atau genre untuk menemukan film secara kilat.</dd>
+          </dl>
+        </article>
+
+        <article>
+          <h3>6. Glosarium Istilah Populer Dunia Streaming Film</h3>
+          <ul>
+            <li><strong>Sub Indo:</strong> Singkatan dari Subtitle Indonesia, yaitu teks terjemahan dialog film ke dalam bahasa Indonesia.</li>
+            <li><strong>Full Movie:</strong> Menunjukkan bahwa film ditayangkan lengkap berdurasi utuh dari babak pembuka hingga kredit akhir.</li>
+            <li><strong>CAM / HD-CAM:</strong> Kualitas video hasil rekaman kamera awal di gedung bioskop saat film baru pertama kali tayang.</li>
+            <li><strong>WEB-DL / WEBRip:</strong> Kualitas visual jernih hasil rekaman platform streaming digital resmi berkualitas tajam tanpa watermark.</li>
+            <li><strong>BluRay (BD) 1080p:</strong> Standar resolusi dan kualitas visual terbaik dengan ketajaman warna detail dan audio berkualitas tinggi.</li>
+            <li><strong>IMDb Score:</strong> Skor penilaian dan rating kepuasan film dari jutaan penonton di database perfilman dunia IMDb.</li>
+          </ul>
+        </article>
       </section>
+
+      {/* Structured Data: FAQPage JSON-LD Schema for Google Rich Results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Apakah menonton film dan serial TV di EMOVIES benar-benar gratis?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Ya, seluruh katalog film dan serial televisi di EMOVIES dapat dinikmati 100% gratis tanpa perlu membuat akun, memasukkan kartu kredit, ataupun membayar biaya langganan."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Bagaimana cara mengatasi video yang lambat atau mengalami buffering?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Pastikan sambungan internet Anda cukup stabil. Jika video masih tersendat, klik menu server di atas pemutar video dan pilih server alternatif seperti CineSrc atau VidSrc."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Apakah semua film di EMOVIES sudah dilengkapi subtitle bahasa Indonesia?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Benar, hampir semua film dan serial di EMOVIES telah dilengkapi takarir bahasa Indonesia (Sub Indo) yang terpasang otomatis di layar pemutar video."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Seberapa sering koleksi film dan serial di EMOVIES diupdate?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Koleksi kami diperbarui setiap hari dengan judul-judul film bioskop box office 2026 terbaru dan episode drama berseri yang baru saja ditayangkan."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Apakah EMOVIES bisa dibuka di ponsel HP Android dan iPhone?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Tentu saja. EMOVIES dirancang sepenuhnya mobile-friendly untuk kenyamanan menonton di layar ponsel pintar Android, iPhone, iPad, tablet, dan PC laptop."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Bagaimana cara mencari judul film atau aktor kesukaan di EMOVIES?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Gunakan ikon kaca pembesar (Pencarian) di bagian navigasi atas. Ketikkan judul film, nama aktor, sutradara, atau genre untuk menemukan film secara kilat."
+                }
+              }
+            ]
+          })
+        }}
+      />
     </div>
   );
 }
