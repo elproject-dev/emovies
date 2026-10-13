@@ -41,13 +41,6 @@ async function generateSitemap() {
             lastmod: lastMod.split('T')[0],
             priority: '0.8',
             changefreq: 'weekly',
-            video: {
-              title: cleanTitle,
-              description: cleanDesc,
-              thumbnailLoc: thumb,
-              playerLoc: `${baseUrl}/movie/watch?id=${v.id}`,
-              publicationDate: lastMod,
-            }
           });
         });
       }
@@ -57,25 +50,14 @@ async function generateSitemap() {
   }
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages
   .map(
     p => `  <url>
     <loc>${p.loc}</loc>
     ${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : `<lastmod>${new Date().toISOString().split('T')[0]}</lastmod>`}
     <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>${
-      p.video
-        ? `
-    <video:video>
-      <video:thumbnail_loc>${p.video.thumbnailLoc}</video:thumbnail_loc>
-      <video:title><![CDATA[${p.video.title}]]></video:title>
-      <video:description><![CDATA[${p.video.description}]]></video:description>
-      <video:player_loc>${p.video.playerLoc}</video:player_loc>
-      <video:publication_date>${p.video.publicationDate}</video:publication_date>
-    </video:video>`
-        : ''
-    }
+    <priority>${p.priority}</priority>
   </url>`
   )
   .join('\n')}
