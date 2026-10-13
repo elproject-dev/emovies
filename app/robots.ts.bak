@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/private/'], // Sesuaikan jika ada halaman yang ingin disembunyikan dari Google
     },
-    sitemap: 'https://emovies.com/sitemap.xml', // Ganti dengan URL website asli
+    sitemap: 'https://emovies.elproject.studio/sitemap.xml', // Ganti dengan URL website asli
   };
 }

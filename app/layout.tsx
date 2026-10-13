@@ -24,9 +24,6 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://emovies.elproject.
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  alternates: {
-    canonical: "/",
-  },
   title: {
     template: "%s | EMOVIES - Nonton Film & TV Series Sub Indo",
     default: "EMOVIES - Nonton Film & TV Series Sub Indo Streaming Gratis",

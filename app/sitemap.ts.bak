@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://emovies.com'; // Ganti dengan URL domain Anda nantinya
+  const baseUrl = 'https://emovies.elproject.studio'; // Ganti dengan URL domain Anda nantinya
 
   return [
     {

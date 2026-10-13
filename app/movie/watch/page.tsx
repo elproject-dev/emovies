@@ -120,6 +120,15 @@ function WatchContent() {
     const snippet = video.description ? video.description.slice(0, 160) : `Nonton film ${movieTitle} streaming subtitle indonesia gratis`;
     metaDesc.setAttribute('content', `Nonton ${movieTitle}${movieYear} sub indo full movie streaming gratis di EMOVIES. ${snippet}`);
 
+    // Dynamic canonical link
+    let canonicalLink = document.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.setAttribute('rel', 'canonical');
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute('href', `${window.location.origin}/movie/watch?id=${video.id}`);
+
     // Dynamic Schema.org JSON-LD
     const scriptId = 'movie-rich-snippet';
     let script = document.getElementById(scriptId) as HTMLScriptElement | null;
