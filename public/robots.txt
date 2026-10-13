@@ -6,6 +6,15 @@ Allow: /
 Disallow: /admin/
 Disallow: /actions/
 
+# Pastikan perayap gambar Google (Googlebot-Image) diizinkan mengakses favicon dan icon
+User-agent: Googlebot-Image
+Allow: /
+Allow: /favicon.ico
+Allow: /icon*.png
+Allow: /apple-icon.png
+Allow: /site.webmanifest
+
+
 # Lokasi Peta Situs (Sitemap)
 Sitemap: https://emovies.elproject.studio/sitemap.xml
 
