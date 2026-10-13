@@ -595,7 +595,7 @@ export default function AdminPage() {
     }
   }
 
-  if (searchQuery.trim().length >= 3) {
+  if (searchQuery.trim().length > 0) {
     filteredVideos = filteredVideos.filter(v =>
       v.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       v.genre?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -857,119 +857,233 @@ export default function AdminPage() {
               </h2>
             </div>
 
-            <p className="text-gray-400 mb-8 max-w-3xl">
-              Cari dan pilih film yang ingin disorot pada Hero Banner di halaman depan.
-              Klik tombol Bintang untuk menambah atau menghapus film dari sorotan. (Sangat disarankan film yang dipilih memiliki Backdrop).
+            <p className="text-gray-400 mb-6 max-w-3xl">
+              Kelola film yang disorot pada Hero Banner halaman utama. Semua film yang berstatus <strong>TERPILIH</strong> dikumpulkan bersama di dalam satu wadah khusus di bawah ini agar mudah dipantau.
             </p>
 
-            <div className="bg-[#141414] border border-green-500/30 p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm">
-              <div className="flex items-center gap-2 text-gray-300">
-                <span className="text-green-400 font-bold">💡 Konsep Hero Banner:</span>
-                <span>Sistem saat ini menampilkan film secara <strong>acak (random)</strong>. Film dengan status <strong>TERPILIH</strong> akan diprioritaskan dan diacak di hero banner halaman depan.</span>
-              </div>
-              <div className="text-xs bg-black/60 border border-green-500/40 text-green-400 px-3 py-1 font-semibold whitespace-nowrap">
-                {videos.filter(v => v.is_featured).length} Film Terpilih
-              </div>
-            </div>
-
-            {/* Filter Tabs (Semua / Terpilih / Belum Terpilih) */}
-            <div className="flex flex-wrap items-center gap-2 mb-6">
-              <button
-                type="button"
-                onClick={() => {
-                  setHeroFilter('all');
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all ${heroFilter === 'all' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-gray-300 border-gray-800 hover:border-gray-600'}`}
-              >
-                Semua Film ({videos.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setHeroFilter('featured');
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all flex items-center gap-1.5 ${heroFilter === 'featured' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-yellow-400 border-gray-800 hover:border-yellow-500/50'}`}
-              >
-                <Star className="w-4 h-4 fill-current" />
-                Film Terpilih ({videos.filter(v => v.is_featured).length})
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setHeroFilter('unfeatured');
-                  setCurrentPage(1);
-                }}
-                className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all ${heroFilter === 'unfeatured' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-gray-400 border-gray-800 hover:border-gray-600'}`}
-              >
-                Belum Terpilih ({videos.filter(v => !v.is_featured).length})
-              </button>
-            </div>
-
-            {/* Search Bar & Sort */}
-            <div className="relative mb-8 max-w-xl flex gap-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Cari film untuk dijadikan banner..."
-                  className="w-full h-10 pl-12 pr-4 bg-[#1a1a1a] text-white border border-green-600 focus:border-green-500 focus:outline-none transition-colors"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="h-10 px-4 bg-[#1a1a1a] text-white border border-green-600 focus:border-green-500 focus:outline-none hidden sm:block"
-              >
-                <option value="newest">Urutkan: Terbaru</option>
-                <option value="rating">Urutkan: Rating Tertinggi</option>
-              </select>
-            </div>
-
-            {/* Grid selector */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-              {paginatedVideos.map(video => (
-                <div key={video.id} className={`relative group border transition-all ${video.is_featured ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-green-900/10' : 'border-gray-800 bg-[#111] hover:border-gray-600'}`}>
-                  <div className="aspect-video w-full bg-gray-900 relative overflow-hidden">
-                    {video.backdrop_url || video.thumbnail_url || video.poster_url ? (
-                      <img src={video.backdrop_url || video.thumbnail_url || video.poster_url} alt={video.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Film className="w-6 h-6 text-gray-700" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
-                      <button
-                        onClick={() => handleToggleFeature(video.id, !!video.is_featured)}
-                        className={`p-3 rounded-full transition-transform transform hover:scale-110 ${video.is_featured ? 'bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white' : 'bg-green-500/20 text-green-500 hover:bg-green-500 hover:text-white'}`}
-                      >
-                        {video.is_featured ? <X className="w-6 h-6" /> : <Star className="w-6 h-6" />}
-                      </button>
-                    </div>
-                    {/* Rating Badge */}
-                    <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold px-1.5 py-0.5 shadow-[0_0_5px_rgba(0,0,0,0.8)] flex items-center gap-1">
-                      <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> {Number(video.score || video.imdb_score || 0).toFixed(1)}
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <h3 className="font-semibold text-sm text-white line-clamp-1">{video.title}</h3>
-                    <div className="flex items-center justify-between mt-1">
-                      <p className="text-xs text-gray-500">{video.year || '-'}</p>
-                      {video.is_featured && <span className="text-[10px] bg-green-500 text-black px-1.5 py-0.5 font-bold">TERPILIH</span>}
-                    </div>
-                  </div>
+            {/* WADAH UTAMA: Film Terpilih Hero Banner (Semua film terpilih digabungkan di 1 wadah ini) */}
+            <div className="mb-10 p-5 rounded-xl bg-[#141414] border-2 border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.15)]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-gray-800 gap-3">
+                <div>
+                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                    <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                    Wadah Koleksi Film Terpilih Hero Banner
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Seluruh film di wadah ini akan tampil sebagai sorotan utama di Hero Banner beranda depan. Wadah ini tetap utuh dan tidak terpisah meskipun Anda mencari film lain di bawah.
+                  </p>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/40 px-3 py-1 font-bold rounded-full whitespace-nowrap">
+                    {videos.filter(v => v.is_featured).length} Film Terpilih
+                  </span>
+                </div>
+              </div>
+
+              {videos.filter(v => v.is_featured).length === 0 ? (
+                <div className="py-8 text-center border-2 border-dashed border-gray-800 rounded-lg bg-black/40">
+                  <Star className="w-8 h-8 text-gray-600 mx-auto mb-2" />
+                  <p className="text-gray-400 text-sm font-medium">Belum ada film di dalam wadah Hero Banner.</p>
+                  <p className="text-gray-600 text-xs mt-1">Gunakan kolom pencarian di bawah lalu klik tombol bintang untuk memasukkan film ke wadah ini.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 max-h-[460px] overflow-y-auto pr-1">
+                  {videos.filter(v => v.is_featured).map((video) => (
+                    <div
+                      key={`hero-tray-${video.id}`}
+                      className="relative group bg-[#181818] border border-green-500/60 shadow-[0_0_10px_rgba(34,197,94,0.2)] rounded-lg overflow-hidden flex flex-col transition-all hover:border-green-400"
+                    >
+                      {/* Thumbnail with Backdrop */}
+                      <div className="aspect-video w-full bg-gray-900 relative overflow-hidden">
+                        {video.backdrop_url || video.thumbnail_url || video.poster_url ? (
+                          <img
+                            src={video.backdrop_url || video.thumbnail_url || video.poster_url}
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Film className="w-6 h-6 text-gray-700" />
+                          </div>
+                        )}
+
+                        {/* Quick Remove Button */}
+                        <button
+                          type="button"
+                          onClick={() => handleToggleFeature(video.id, true)}
+                          title="Hapus film dari wadah Hero Banner"
+                          className="absolute top-1.5 right-1.5 bg-red-600/90 hover:bg-red-500 text-white p-1.5 rounded-full shadow-lg transition-transform hover:scale-110 cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Rating Badge */}
+                        {(video.score || video.imdb_score) && (
+                          <div className="absolute bottom-1 left-1.5 bg-black/80 text-[10px] text-yellow-400 font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                            <Star className="w-2.5 h-2.5 fill-yellow-400" />
+                            {Number(video.score || video.imdb_score).toFixed(1)}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Info Title */}
+                      <div className="p-2.5 flex-1 flex flex-col justify-between">
+                        <h4 className="font-semibold text-xs text-white line-clamp-1" title={video.title}>
+                          {video.title}
+                        </h4>
+                        <div className="flex items-center justify-between mt-1 text-[10px]">
+                          <span className="text-gray-400">{video.year || '-'}</span>
+                          <span className="bg-green-500/20 text-green-400 border border-green-500/40 px-1 py-0.5 font-bold rounded">TERPILIH</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {paginatedVideos.length === 0 && (
-              <div className="py-12 text-center border-2 border-dashed border-gray-800">
-                <p className="text-gray-500">Tidak ada film ditemukan.</p>
+            {/* Bagian Katalog & Pencarian untuk Tambah Film ke Hero Banner */}
+            <div className="mt-8 pt-6 border-t border-gray-800">
+              <div className="mb-4">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <Plus className="w-4 h-4 text-green-400" />
+                  Cari &amp; Tambahkan Film ke Wadah Hero Banner
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Ketik judul film di bawah untuk mencari dari katalog, lalu klik tombol untuk langsung memasukkannya ke wadah di atas.
+                </p>
               </div>
-            )}
+
+              {/* Filter Tabs (Semua / Belum Terpilih / Hanya Terpilih) */}
+              <div className="flex flex-wrap items-center gap-2 mb-6">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHeroFilter('all');
+                    setCurrentPage(1);
+                  }}
+                  className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all ${heroFilter === 'all' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-gray-300 border-gray-800 hover:border-gray-600'}`}
+                >
+                  Semua Film ({videos.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHeroFilter('unfeatured');
+                    setCurrentPage(1);
+                  }}
+                  className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all ${heroFilter === 'unfeatured' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-gray-400 border-gray-800 hover:border-gray-600'}`}
+                >
+                  Belum Terpilih ({videos.filter(v => !v.is_featured).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHeroFilter('featured');
+                    setCurrentPage(1);
+                  }}
+                  className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all flex items-center gap-1.5 ${heroFilter === 'featured' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-yellow-400 border-gray-800 hover:border-yellow-500/50'}`}
+                >
+                  <Star className="w-4 h-4 fill-current" />
+                  Hanya Yang Terpilih ({videos.filter(v => v.is_featured).length})
+                </button>
+              </div>
+
+              {/* Search Bar & Sort */}
+              <div className="relative mb-8 max-w-xl flex gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Ketik judul film untuk ditambahkan ke Hero Banner..."
+                    className="w-full h-10 pl-12 pr-10 bg-[#1a1a1a] text-white border border-green-600 focus:border-green-500 focus:outline-none transition-colors"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setCurrentPage(1);
+                      }}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white p-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="h-10 px-4 bg-[#1a1a1a] text-white border border-green-600 focus:border-green-500 focus:outline-none hidden sm:block"
+                >
+                  <option value="newest">Urutkan: Terbaru</option>
+                  <option value="rating">Urutkan: Rating Tertinggi</option>
+                </select>
+              </div>
+
+              {/* Grid selector */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {paginatedVideos.map(video => (
+                  <div key={video.id} className={`relative group border transition-all ${video.is_featured ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-green-900/10' : 'border-gray-800 bg-[#111] hover:border-gray-600'}`}>
+                    <div className="aspect-video w-full bg-gray-900 relative overflow-hidden">
+                      {video.backdrop_url || video.thumbnail_url || video.poster_url ? (
+                        <img src={video.backdrop_url || video.thumbnail_url || video.poster_url} alt={video.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Film className="w-6 h-6 text-gray-700" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm p-2 text-center">
+                        <button
+                          onClick={() => handleToggleFeature(video.id, !!video.is_featured)}
+                          className={`px-3 py-1.5 text-xs font-bold rounded flex items-center gap-1.5 transition-all cursor-pointer ${
+                            video.is_featured
+                              ? 'bg-red-600 hover:bg-red-500 text-white shadow-lg'
+                              : 'bg-green-500 hover:bg-green-400 text-black shadow-lg shadow-green-500/40'
+                          }`}
+                        >
+                          {video.is_featured ? (
+                            <>
+                              <X className="w-4 h-4" /> Hapus dari Hero
+                            </>
+                          ) : (
+                            <>
+                              <Star className="w-4 h-4 fill-black" /> + Pilih untuk Hero
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      {/* Rating Badge */}
+                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold px-1.5 py-0.5 shadow-[0_0_5px_rgba(0,0,0,0.8)] flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> {Number(video.score || video.imdb_score || 0).toFixed(1)}
+                      </div>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-semibold text-sm text-white line-clamp-1">{video.title}</h3>
+                      <div className="flex items-center justify-between mt-1">
+                        <p className="text-xs text-gray-500">{video.year || '-'}</p>
+                        {video.is_featured ? (
+                          <span className="text-[10px] bg-green-500 text-black px-1.5 py-0.5 font-bold">TERPILIH</span>
+                        ) : (
+                          <span className="text-[10px] text-gray-500">Belum Terpilih</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {paginatedVideos.length === 0 && (
+                <div className="py-12 text-center border-2 border-dashed border-gray-800 mt-4">
+                  <p className="text-gray-500">Tidak ada film ditemukan pada pencarian ini.</p>
+                </div>
+              )}
+            </div>
 
             {/* Pagination Controls Reuse */}
             {totalPages > 1 && (
