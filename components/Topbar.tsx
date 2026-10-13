@@ -101,7 +101,7 @@ export default function Topbar() {
                 alt="EMOVIES Logo"
                 width={36}
                 height={36}
-                className="rounded-md group-hover:scale-110 transition-transform duration-200"
+                className="hidden sm:block rounded-md group-hover:scale-110 transition-transform duration-200"
                 priority
               />
               <span className="text-xl font-bold text-white block tracking-wide">

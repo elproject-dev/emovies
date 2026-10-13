@@ -41,7 +41,7 @@ function WatchContent() {
       if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
       unlockTimeoutRef.current = setTimeout(() => {
         setIsUnlockVisible(false);
-      }, 3500);
+      }, 3000);
       return;
     }
 
@@ -52,8 +52,10 @@ function WatchContent() {
     toolbarTimeoutRef.current = setTimeout(() => {
       if (isPlaying) {
         setIsToolbarVisible(false);
+        setShowServerMenu(false);
+        setShowSubtitleMenu(false);
       }
-    }, 4000);
+    }, 3000);
   };
 
   const hasTrackedRef = useRef<string | null>(null);
@@ -444,10 +446,10 @@ function WatchContent() {
 
           {/* Top Bar (Kembali & Judul) */}
           <div
-            className={`absolute top-0 left-0 p-4 sm:p-6 z-[110] transition-all duration-300 pointer-events-none ${isToolbarVisible ? 'opacity-100' : 'opacity-35 hover:opacity-100'}`}
+            className={`absolute top-0 left-0 p-4 sm:p-6 z-[110] transition-opacity duration-300 pointer-events-none ${isToolbarVisible ? 'opacity-100' : 'opacity-0'}`}
             style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1rem)' }}
           >
-            <div className="flex items-center gap-3 pointer-events-auto">
+            <div className={`flex items-center gap-3 ${isToolbarVisible ? 'pointer-events-auto' : 'pointer-events-none'}`}>
               <button
                 onClick={async () => {
                   setIsPlaying(false);
@@ -479,24 +481,26 @@ function WatchContent() {
 
           {/* Middle-Left Controls (Subtitle, Server, Lock, Fullscreen) */}
           <div
-            className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 flex flex-col items-start gap-2.5 z-[110] transition-all duration-300 pointer-events-auto ${isToolbarVisible
-              ? 'opacity-100'
-              : 'opacity-35 hover:opacity-100'
-              }`}
+            className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 sm:gap-2.5 z-[110] transition-opacity duration-300 ${
+              isToolbarVisible
+                ? 'opacity-100 pointer-events-auto'
+                : 'opacity-0 pointer-events-none'
+            }`}
           >
             {/* Subtitle Button */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => {
                   handleSearchSubtitles();
                   setShowServerMenu(false);
                   resetToolbarTimer();
                 }}
-                className="bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-white shadow-lg group"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
                 title="Subtitle"
+                aria-label="Subtitle"
               >
-                <Captions className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-green-400 transition-colors ${isSearchingSubs ? 'animate-pulse text-green-400' : ''}`} />
-                <span className="text-xs sm:text-sm font-semibold">Subtitle</span>
+                <Captions className={`w-5 h-5 text-gray-300 group-hover:text-green-400 transition-colors ${isSearchingSubs ? 'animate-pulse text-green-400' : ''}`} />
               </button>
             </div>
 
@@ -504,17 +508,19 @@ function WatchContent() {
             {serverUrls.length > 0 && (
               <div className="relative">
                 <button
+                  type="button"
                   onClick={() => {
                     setShowServerMenu(!showServerMenu);
                     setShowSubtitleMenu(false);
                     resetToolbarTimer();
                   }}
-                  className="bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-white shadow-lg group"
-                  title="Server"
+                  className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer ${
+                    showServerMenu ? 'border-green-500 bg-black/90 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'border-white/10 hover:border-green-500/50'
+                  }`}
+                  title="Pilih Server"
+                  aria-label="Pilih Server"
                 >
-                  <Database className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-300 group-hover:text-green-400 transition-colors" />
-                  <span className="text-xs sm:text-sm font-semibold">Server</span>
-                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showServerMenu ? 'rotate-180' : ''}`} />
+                  <Database className="w-5 h-5 text-gray-300 group-hover:text-green-400 transition-colors" />
                 </button>
 
                 {/* Server Menu Overlay (Membuka ke kanan dari tombol server tengah kiri) */}
@@ -524,7 +530,7 @@ function WatchContent() {
                       <h3 className="text-white font-bold flex items-center gap-2 text-sm">
                         <Database className="w-3.5 h-3.5 text-green-500" /> Pilih Server
                       </h3>
-                      <button onClick={() => setShowServerMenu(false)} className="text-gray-400 hover:text-white">
+                      <button onClick={() => setShowServerMenu(false)} className="text-gray-400 hover:text-white p-1 cursor-pointer">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
@@ -551,7 +557,6 @@ function WatchContent() {
                           else if (url.includes('vidy.st')) serverName = 'Vidy';
                           else if (url.includes('embed.filmu.in')) serverName = 'Filmu';
                           else if (url.includes('embedmaster.link')) serverName = 'EmbedMaster';
-
                         }
 
                         return (
@@ -562,7 +567,7 @@ function WatchContent() {
                               setShowServerMenu(false);
                               resetToolbarTimer();
                             }}
-                            className={`w-full text-left p-2.5 rounded-lg transition-colors text-sm font-medium flex items-center justify-between ${activeServerIndex === index
+                            className={`w-full text-left p-2.5 rounded-lg transition-colors text-sm font-medium flex items-center justify-between cursor-pointer ${activeServerIndex === index
                               ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                               : 'text-gray-300 hover:bg-gray-800/50 border border-transparent hover:border-gray-700'
                               }`}
@@ -583,44 +588,43 @@ function WatchContent() {
             {/* Lock Button (Khusus Android) */}
             {Capacitor.isNativePlatform() && (
               <button
+                type="button"
                 onClick={() => {
                   setIsLocked(true);
                   setIsToolbarVisible(false);
                   setShowServerMenu(false);
                   setShowSubtitleMenu(false);
                 }}
-                className="bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-white shadow-lg group"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
                 title="Kunci Layar"
+                aria-label="Kunci Layar"
               >
-                <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-green-400 transition-colors" />
-                <span className="text-xs sm:text-sm font-semibold">Lock</span>
+                <Lock className="w-5 h-5 text-gray-300 group-hover:text-green-400 transition-colors" />
               </button>
             )}
 
             {/* Fullscreen Button (Khusus Android) */}
             {Capacitor.isNativePlatform() && (
               <button
+                type="button"
                 onClick={async () => {
                   try {
                     if (!document.fullscreenElement) {
-                      // Enter fullscreen: lock landscape, hide status bar, request fullscreen natively
                       await ScreenOrientation.lock({ orientation: 'landscape' }).catch(() => { });
                       await StatusBar.hide().catch(() => { });
                       await document.documentElement.requestFullscreen().catch(() => { });
                     } else {
-                      // Exit fullscreen: document.exitFullscreen() will trigger the 'fullscreenchange' listener
-                      // which handles ScreenOrientation.unlock() and StatusBar.show()
                       await document.exitFullscreen().catch(() => { });
                     }
                   } catch (err) {
                     console.error("Error toggling native fullscreen:", err);
                   }
                 }}
-                className="bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-white shadow-lg group"
-                title="Fullscreen"
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
+                title="Layar Penuh"
+                aria-label="Layar Penuh"
               >
-                <Maximize className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300 group-hover:text-green-400 transition-colors" />
-                <span className="text-xs sm:text-sm font-semibold">Fullscreen</span>
+                <Maximize className="w-5 h-5 text-gray-300 group-hover:text-green-400 transition-colors" />
               </button>
             )}
           </div>
@@ -716,6 +720,17 @@ function WatchContent() {
             </div>
           )}
 
+          {/* Tap-Catcher Overlay: Menangkap sentuhan saat kontrol tersembunyi agar muncul kembali */}
+          {!isLocked && (
+            <div
+              className={`absolute inset-0 z-[102] transition-colors ${
+                isToolbarVisible ? 'pointer-events-none' : 'pointer-events-auto cursor-pointer'
+              }`}
+              onClick={resetToolbarTimer}
+              onTouchStart={resetToolbarTimer}
+            />
+          )}
+
           {/* Lock Overlay: Menangkap sentuhan saat dikunci agar tidak ada yang terpencet */}
           {isLocked && (
             <div
@@ -729,15 +744,17 @@ function WatchContent() {
           {isLocked && (
             <div className={`absolute top-4 sm:top-6 left-4 sm:left-6 z-[120] transition-opacity duration-300 pointer-events-none ${isUnlockVisible ? 'opacity-100' : 'opacity-0'}`}>
               <button
+                type="button"
                 onClick={() => {
                   setIsLocked(false);
                   setIsUnlockVisible(false);
                   resetToolbarTimer();
                 }}
-                className="pointer-events-auto bg-black/60 hover:bg-black/80 border border-white/10 backdrop-blur-md px-3 sm:px-4 py-2 rounded-lg flex items-center gap-2 transition-transform active:scale-95 shadow-xl"
+                className="pointer-events-auto w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/70 hover:bg-black/90 border border-white/20 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all active:scale-95 shadow-2xl text-white group cursor-pointer"
+                title="Buka Kunci Layar"
+                aria-label="Unlock"
               >
-                <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" />
-                <span className="text-white text-xs sm:text-sm font-semibold">Unlock</span>
+                <Unlock className="w-5 h-5 text-green-400 group-hover:scale-110 transition-transform" />
               </button>
             </div>
           )}
