@@ -5083,12 +5083,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://emovies.elproject.studio/movie/watch?id=b063dcef-0bfc-44d1-bb83-0cc4260aeb2b</loc>
-    <lastmod>2026-07-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://emovies.elproject.studio/movie/watch?id=a414fbd3-33e7-4b83-bd9e-eb4d17c22211</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>weekly</changefreq>
@@ -6032,6 +6026,12 @@
   </url>
   <url>
     <loc>https://emovies.elproject.studio/movie/watch?id=00328adc-131f-4369-aee9-f2e4bacab814</loc>
+    <lastmod>2026-07-17</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://emovies.elproject.studio/movie/watch?id=c0d4eab2-1827-46a2-a757-dc4f4bd9b4aa</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>

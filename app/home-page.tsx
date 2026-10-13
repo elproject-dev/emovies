@@ -228,18 +228,13 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
         </div>
 
         {videos.length > 1 && (
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-[10px] sm:text-xs text-gray-300 font-medium bg-black/60 px-2 py-0.5 rounded border border-white/10 shrink-0">
-              {(currentIndex % videos.length) + 1} / {videos.length}
-            </span>
-            <button
-              onClick={handleNext}
-              className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-black/60 hover:bg-green-500 text-gray-300 hover:text-black border border-white/20 hover:border-green-400 flex items-center justify-center transition-all backdrop-blur-md shadow-md sm:ml-1"
-              aria-label="Next Slide"
-            >
-              <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-            </button>
-          </div>
+          <button
+            onClick={handleNext}
+            className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-black/60 hover:bg-green-500 text-gray-300 hover:text-black border border-white/20 hover:border-green-400 flex items-center justify-center transition-all backdrop-blur-md shadow-md sm:ml-1 cursor-pointer"
+            aria-label="Next Slide"
+          >
+            <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+          </button>
         )}
       </div>
     </div>
@@ -319,22 +314,26 @@ const shuffleArray = <T,>(array: T[]): T[] => {
   return shuffled;
 };
 
-const selectHeroVideos = (videoList: any[], shouldShuffle = false) => {
+const selectHeroVideos = (videoList: any[], shouldShuffle = false, limit = 10) => {
   if (!videoList || videoList.length === 0) return [];
   const uniqueVideos = Array.from(new Map(videoList.map(v => [v.id, v])).values());
   const featuredPool = uniqueVideos.filter((v: any) => v.is_featured === true);
 
   let pool: any[] = [];
   if (featuredPool.length > 0) {
-    // Gunakan seluruh film unggulan terpilih dari wadah Hero Banner
+    // Ambil dari seluruh film unggulan terpilih di wadah
     pool = [...featuredPool];
   } else {
     // Fallback jika belum ada film unggulan di wadah
     const backdropVideos = uniqueVideos.filter((v: any) => v.backdrop_url);
-    pool = backdropVideos.length > 0 ? backdropVideos.slice(0, 10) : uniqueVideos.slice(0, 10);
+    pool = backdropVideos.length > 0 ? backdropVideos : uniqueVideos;
   }
 
-  return shouldShuffle ? shuffleArray(pool) : pool;
+  // Opsi random: acak urutan film dari wadah sebelum mengambil 10 film
+  const ordered = shouldShuffle ? shuffleArray(pool) : pool;
+
+  // Batasi hanya 10 film per halaman
+  return ordered.slice(0, limit);
 };
 
 export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) {
@@ -345,13 +344,14 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
   const viewFilter = searchParams?.get('view') || '';
 
   const [videos, setVideos] = useState<any[]>(initialVideos);
-  // Inisialisasi deterministik untuk mencegah hydration error SSR
-  const [heroVideos, setHeroVideos] = useState<any[]>(() => selectHeroVideos(initialVideos, false));
+  // Inisialisasi deterministik 10 film untuk mencegah hydration error SSR
+  const [heroVideos, setHeroVideos] = useState<any[]>(() => selectHeroVideos(initialVideos, false, 10));
   const [isLoading, setIsLoading] = useState(initialVideos.length === 0);
 
-  // Randomisasi hero banner pada sisi klien saat halaman dimuat / di-refresh
+  // Randomisasi 10 film hero banner dari wadah pada sisi klien saat halaman dimuat / di-refresh
   useEffect(() => {
-    setHeroVideos((prev) => (prev.length > 0 ? shuffleArray(prev) : prev));
+    const source = videos.length > 0 ? videos : initialVideos;
+    setHeroVideos(selectHeroVideos(source, true, 10));
   }, []);
 
   useEffect(() => {
@@ -403,7 +403,7 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
             }
           }
 
-          const selectedHero = selectHeroVideos(merged, true);
+          const selectedHero = selectHeroVideos(merged, true, 10);
           setVideos(merged);
           setHeroVideos(selectedHero);
           setIsLoading(false);
@@ -413,7 +413,7 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
         const { data, error } = await request;
         if (error) throw error;
         const list = data || [];
-        const selectedHero = selectHeroVideos(list, true);
+        const selectedHero = selectHeroVideos(list, true, 10);
         setVideos(list);
         setHeroVideos(selectedHero);
       } catch (err) {
