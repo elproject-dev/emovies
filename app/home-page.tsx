@@ -210,7 +210,7 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
 
       {/* Navigation Dots & Next Button */}
       <div className="absolute bottom-2.5 sm:bottom-6 left-0 right-0 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between sm:justify-start gap-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 max-w-[calc(100%-90px)] sm:max-w-xl overflow-x-auto no-scrollbar py-1">
           {videos.map((_, idx) => {
             const isActive = currentIndex === idx || (currentIndex === extendedVideos.length - 1 && idx === 0);
             return (
@@ -220,7 +220,7 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
                   setIsTransitioning(true);
                   setCurrentIndex(idx);
                 }}
-                className={`h-2 rounded-full transition-all ${isActive ? 'bg-green-500 w-8 shadow-[0_0_10px_rgba(34,197,94,0.8)]' : 'bg-gray-500/50 w-2 hover:bg-gray-400'}`}
+                className={`h-1.5 sm:h-2 rounded-full transition-all shrink-0 ${isActive ? 'bg-green-500 w-6 sm:w-8 shadow-[0_0_10px_rgba(34,197,94,0.8)]' : 'bg-gray-500/50 w-1.5 sm:w-2 hover:bg-gray-400'}`}
                 aria-label={`Go to slide ${idx + 1}`}
               />
             );
@@ -228,13 +228,18 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
         </div>
 
         {videos.length > 1 && (
-          <button
-            onClick={handleNext}
-            className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-black/60 hover:bg-green-500 text-gray-300 hover:text-black border border-white/20 hover:border-green-400 flex items-center justify-center transition-all backdrop-blur-md shadow-md sm:ml-1"
-            aria-label="Next Slide"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] sm:text-xs text-gray-300 font-medium bg-black/60 px-2 py-0.5 rounded border border-white/10 shrink-0">
+              {(currentIndex % videos.length) + 1} / {videos.length}
+            </span>
+            <button
+              onClick={handleNext}
+              className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-black/60 hover:bg-green-500 text-gray-300 hover:text-black border border-white/20 hover:border-green-400 flex items-center justify-center transition-all backdrop-blur-md shadow-md sm:ml-1"
+              aria-label="Next Slide"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            </button>
+          </div>
         )}
       </div>
     </div>
@@ -305,17 +310,31 @@ const FilteredVideoGrid = ({ title, videos }: { title: string, videos: any[] }) 
   );
 };
 
-const selectHeroVideos = (videoList: any[]) => {
-  if (videoList.length === 0) return [];
-  const featuredPool = videoList.filter((v: any) => v.is_featured === true);
-  if (featuredPool.length >= 3) {
-    return featuredPool.slice(0, 8);
-  } else {
-    const backdropVideos = videoList.filter((v: any) => v.backdrop_url && !featuredPool.some((f: any) => f.id === v.id));
-    const combined = [...featuredPool, ...backdropVideos];
-    if (combined.length > 0) return combined.slice(0, 8);
-    return videoList.slice(0, 8);
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
+  return shuffled;
+};
+
+const selectHeroVideos = (videoList: any[], shouldShuffle = false) => {
+  if (!videoList || videoList.length === 0) return [];
+  const uniqueVideos = Array.from(new Map(videoList.map(v => [v.id, v])).values());
+  const featuredPool = uniqueVideos.filter((v: any) => v.is_featured === true);
+
+  let pool: any[] = [];
+  if (featuredPool.length > 0) {
+    // Gunakan seluruh film unggulan terpilih dari wadah Hero Banner
+    pool = [...featuredPool];
+  } else {
+    // Fallback jika belum ada film unggulan di wadah
+    const backdropVideos = uniqueVideos.filter((v: any) => v.backdrop_url);
+    pool = backdropVideos.length > 0 ? backdropVideos.slice(0, 10) : uniqueVideos.slice(0, 10);
+  }
+
+  return shouldShuffle ? shuffleArray(pool) : pool;
 };
 
 export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) {
@@ -326,28 +345,30 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
   const viewFilter = searchParams?.get('view') || '';
 
   const [videos, setVideos] = useState<any[]>(initialVideos);
-  const [heroVideos, setHeroVideos] = useState<any[]>(() => selectHeroVideos(initialVideos));
+  // Inisialisasi deterministik untuk mencegah hydration error SSR
+  const [heroVideos, setHeroVideos] = useState<any[]>(() => selectHeroVideos(initialVideos, false));
   const [isLoading, setIsLoading] = useState(initialVideos.length === 0);
+
+  // Randomisasi hero banner pada sisi klien saat halaman dimuat / di-refresh
+  useEffect(() => {
+    setHeroVideos((prev) => (prev.length > 0 ? shuffleArray(prev) : prev));
+  }, []);
 
   useEffect(() => {
     const isFiltered = Boolean(query || typeFilter || genreFilter || viewFilter);
-    // Jika tidak ada filter dan data initialVideos sudah ada, gunakan data yang sudah ada
-    if (!isFiltered && initialVideos.length > 0 && videos.length === initialVideos.length) {
-      return;
-    }
 
     const fetchVideos = async () => {
-      setIsLoading(true);
+      if (initialVideos.length === 0 || isFiltered) {
+        setIsLoading(true);
+      }
       try {
         let request = supabase.from('videos').select('*');
 
         if (query) {
           request = request.ilike('title', `%${query}%`).order('created_at', { ascending: false }).limit(100);
         } else if (genreFilter) {
-          // Asumsi ada kolom genre atau category yang mengandung teks ini
           request = request.ilike('genre', `%${genreFilter}%`).order('created_at', { ascending: false }).limit(200);
         } else if (typeFilter) {
-          // Both 'movie' (dari TMDB) and 'film' (kategori lokal streamx) are considered movies
           if (typeFilter === 'movie') {
             request = request.in('content_type', ['movie', 'film']).order('created_at', { ascending: false }).limit(200);
           } else {
@@ -360,11 +381,11 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
         } else if (viewFilter === 'latest') {
           request = request.order('created_at', { ascending: false }).limit(200);
         } else {
-          // Default homepage: fetch movie dan TV terpisah agar seimbang
+          // Default homepage: fetch movie, TV, dan seluruh unggulan wadah terpisah agar seimbang
           const [moviesRes, tvRes, featuredRes] = await Promise.all([
             supabase.from('videos').select('*').in('content_type', ['movie', 'film']).order('created_at', { ascending: false }).limit(150),
             supabase.from('videos').select('*').eq('content_type', 'tv').order('created_at', { ascending: false }).limit(50),
-            supabase.from('videos').select('*').eq('is_featured', true).order('created_at', { ascending: false }).limit(50),
+            supabase.from('videos').select('*').eq('is_featured', true).order('created_at', { ascending: false }).limit(100),
           ]);
 
           if (moviesRes.error) throw moviesRes.error;
@@ -372,7 +393,7 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
           const mergedIds = new Set<string>();
           const merged: any[] = [];
 
-          // Gabungkan movie + TV + featured tanpa duplikat
+          // Gabungkan movie + TV + seluruh featured wadah tanpa duplikat
           for (const list of [moviesRes.data, tvRes.data, featuredRes.data]) {
             for (const v of (list || [])) {
               if (!mergedIds.has(v.id)) {
@@ -382,7 +403,7 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
             }
           }
 
-          const selectedHero = selectHeroVideos(merged);
+          const selectedHero = selectHeroVideos(merged, true);
           setVideos(merged);
           setHeroVideos(selectedHero);
           setIsLoading(false);
@@ -392,7 +413,7 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
         const { data, error } = await request;
         if (error) throw error;
         const list = data || [];
-        const selectedHero = selectHeroVideos(list);
+        const selectedHero = selectHeroVideos(list, true);
         setVideos(list);
         setHeroVideos(selectedHero);
       } catch (err) {

@@ -16,7 +16,7 @@ export default async function Page() {
     const [moviesRes, tvRes, featuredRes] = await Promise.all([
       supabase.from('videos').select('*').in('content_type', ['movie', 'film']).order('created_at', { ascending: false }).limit(60),
       supabase.from('videos').select('*').eq('content_type', 'tv').order('created_at', { ascending: false }).limit(20),
-      supabase.from('videos').select('*').eq('is_featured', true).order('created_at', { ascending: false }).limit(20),
+      supabase.from('videos').select('*').eq('is_featured', true).order('created_at', { ascending: false }).limit(100),
     ]);
 
     const mergedIds = new Set<string>();
