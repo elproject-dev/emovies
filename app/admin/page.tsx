@@ -162,6 +162,7 @@ export default function AdminPage() {
         genre: '', year: '', duration: '', score: '', poster_url: '', backdrop_url: ''
       });
       fetchVideos();
+      fetchFeaturedVideos();
     } catch (err: any) {
       console.error(err);
       alert('Gagal menyimpan: ' + err.message);
@@ -501,12 +502,6 @@ export default function AdminPage() {
       const { data, error } = await request;
       if (error) throw error;
       setVideos(data || []);
-      if (!query && data) {
-        const featured = data.filter((v: any) => v.is_featured === true);
-        if (featured.length > 0) {
-          setFeaturedVideos(featured);
-        }
-      }
     } catch (err) {
       console.error('Error fetching videos:', err);
     } finally {
@@ -553,6 +548,7 @@ export default function AdminPage() {
       if (error) throw error;
       alert('Film berhasil dihapus.');
       fetchVideos(searchQuery.trim().length >= 3 ? searchQuery.trim() : '');
+      fetchFeaturedVideos();
     } catch (err: any) {
       console.error(err);
       alert('Gagal menghapus: ' + err.message);
@@ -560,26 +556,34 @@ export default function AdminPage() {
   };
 
   const handleToggleFeature = async (id: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+
+    // Optimistic UI update
+    setVideos(prev => prev.map(v => v.id === id ? { ...v, is_featured: newStatus } : v));
+
+    if (newStatus) {
+      setFeaturedVideos(prev => {
+        if (prev.some(f => f.id === id)) return prev;
+        const found = videos.find(v => v.id === id);
+        if (found) return [{ ...found, is_featured: true }, ...prev];
+        return prev;
+      });
+    } else {
+      setFeaturedVideos(prev => prev.filter(v => v.id !== id));
+    }
+
     try {
-      const newStatus = !currentStatus;
       const { error } = await supabase.from('videos').update({ is_featured: newStatus }).eq('id', id);
       if (error) throw error;
-      setVideos(prev => prev.map(v => v.id === id ? { ...v, is_featured: newStatus } : v));
 
-      if (newStatus) {
-        setFeaturedVideos(prev => {
-          if (prev.some(f => f.id === id)) return prev;
-          const found = videos.find(v => v.id === id);
-          if (found) return [{ ...found, is_featured: true }, ...prev];
-          return prev;
-        });
-        fetchFeaturedVideos();
-      } else {
-        setFeaturedVideos(prev => prev.filter(v => v.id !== id));
-      }
+      // Keep featuredVideos in 100% sync with database
+      await fetchFeaturedVideos();
     } catch (err: any) {
-      console.error(err);
-      alert('Gagal mengupdate: ' + err.message);
+      console.error('Error updating featured status:', err);
+      alert('Gagal mengupdate status hero banner: ' + err.message);
+      // Rollback on error
+      fetchFeaturedVideos();
+      fetchVideos(searchQuery.trim().length >= 3 ? searchQuery.trim() : '');
     }
   };
 
@@ -629,9 +633,9 @@ export default function AdminPage() {
 
   if (activeTab === 2) {
     if (heroFilter === 'featured') {
-      filteredVideos = filteredVideos.filter(v => featuredVideos.some(f => f.id === v.id) || v.is_featured === true);
+      filteredVideos = [...featuredVideos];
     } else if (heroFilter === 'unfeatured') {
-      filteredVideos = filteredVideos.filter(v => !featuredVideos.some(f => f.id === v.id) && !v.is_featured);
+      filteredVideos = filteredVideos.filter(v => !featuredVideos.some(f => f.id === v.id));
     }
   }
 
@@ -1069,7 +1073,7 @@ export default function AdminPage() {
               {/* Grid selector */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {paginatedVideos.map(video => {
-                  const isFeatured = featuredVideos.some(f => f.id === video.id) || !!video.is_featured;
+                  const isFeatured = featuredVideos.some(f => f.id === video.id);
                   return (
                     <div key={video.id} className={`relative group border transition-all ${isFeatured ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-green-900/10' : 'border-gray-800 bg-[#111] hover:border-gray-600'}`}>
                       <div className="aspect-video w-full bg-gray-900 relative overflow-hidden">
