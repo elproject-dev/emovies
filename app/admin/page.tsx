@@ -18,6 +18,7 @@ export default function AdminPage() {
   // Data states
   const [activeTab, setActiveTab] = useState<number | null>(null);
   const [videos, setVideos] = useState<any[]>([]);
+  const [featuredVideos, setFeaturedVideos] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('rating'); // Default 'rating' as requested
@@ -181,6 +182,11 @@ export default function AdminPage() {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (!hasInitialized || !isAuthenticated) return;
+    fetchFeaturedVideos();
+  }, [hasInitialized, isAuthenticated]);
 
   useEffect(() => {
     if (!hasInitialized || !isAuthenticated) return;
@@ -495,10 +501,31 @@ export default function AdminPage() {
       const { data, error } = await request;
       if (error) throw error;
       setVideos(data || []);
+      if (!query && data) {
+        const featured = data.filter((v: any) => v.is_featured === true);
+        if (featured.length > 0) {
+          setFeaturedVideos(featured);
+        }
+      }
     } catch (err) {
       console.error('Error fetching videos:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchFeaturedVideos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('videos')
+        .select('*')
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false });
+      if (!error && data) {
+        setFeaturedVideos(data);
+      }
+    } catch (err) {
+      console.error('Error fetching featured videos:', err);
     }
   };
 
@@ -534,9 +561,22 @@ export default function AdminPage() {
 
   const handleToggleFeature = async (id: string, currentStatus: boolean) => {
     try {
-      const { error } = await supabase.from('videos').update({ is_featured: !currentStatus }).eq('id', id);
+      const newStatus = !currentStatus;
+      const { error } = await supabase.from('videos').update({ is_featured: newStatus }).eq('id', id);
       if (error) throw error;
-      setVideos(videos.map(v => v.id === id ? { ...v, is_featured: !currentStatus } : v));
+      setVideos(prev => prev.map(v => v.id === id ? { ...v, is_featured: newStatus } : v));
+
+      if (newStatus) {
+        setFeaturedVideos(prev => {
+          if (prev.some(f => f.id === id)) return prev;
+          const found = videos.find(v => v.id === id);
+          if (found) return [{ ...found, is_featured: true }, ...prev];
+          return prev;
+        });
+        fetchFeaturedVideos();
+      } else {
+        setFeaturedVideos(prev => prev.filter(v => v.id !== id));
+      }
     } catch (err: any) {
       console.error(err);
       alert('Gagal mengupdate: ' + err.message);
@@ -589,9 +629,9 @@ export default function AdminPage() {
 
   if (activeTab === 2) {
     if (heroFilter === 'featured') {
-      filteredVideos = filteredVideos.filter(v => v.is_featured === true);
+      filteredVideos = filteredVideos.filter(v => featuredVideos.some(f => f.id === v.id) || v.is_featured === true);
     } else if (heroFilter === 'unfeatured') {
-      filteredVideos = filteredVideos.filter(v => !v.is_featured);
+      filteredVideos = filteredVideos.filter(v => !featuredVideos.some(f => f.id === v.id) && !v.is_featured);
     }
   }
 
@@ -875,12 +915,12 @@ export default function AdminPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/40 px-3 py-1 font-bold rounded-full whitespace-nowrap">
-                    {videos.filter(v => v.is_featured).length} Film Terpilih
+                    {featuredVideos.length} Film Terpilih
                   </span>
                 </div>
               </div>
 
-              {videos.filter(v => v.is_featured).length === 0 ? (
+              {featuredVideos.length === 0 ? (
                 <div className="py-8 text-center border-2 border-dashed border-gray-800 rounded-lg bg-black/40">
                   <Star className="w-8 h-8 text-gray-600 mx-auto mb-2" />
                   <p className="text-gray-400 text-sm font-medium">Belum ada film di dalam wadah Hero Banner.</p>
@@ -888,7 +928,7 @@ export default function AdminPage() {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3.5 max-h-[460px] overflow-y-auto pr-1">
-                  {videos.filter(v => v.is_featured).map((video) => (
+                  {featuredVideos.map((video) => (
                     <div
                       key={`hero-tray-${video.id}`}
                       className="relative group bg-[#181818] border border-green-500/60 shadow-[0_0_10px_rgba(34,197,94,0.2)] rounded-lg overflow-hidden flex flex-col transition-all hover:border-green-400"
@@ -974,7 +1014,7 @@ export default function AdminPage() {
                   }}
                   className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all ${heroFilter === 'unfeatured' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-gray-400 border-gray-800 hover:border-gray-600'}`}
                 >
-                  Belum Terpilih ({videos.filter(v => !v.is_featured).length})
+                  Belum Terpilih ({videos.filter(v => !featuredVideos.some(f => f.id === v.id)).length})
                 </button>
                 <button
                   type="button"
@@ -985,7 +1025,7 @@ export default function AdminPage() {
                   className={`px-4 py-2 text-xs md:text-sm font-semibold border transition-all flex items-center gap-1.5 ${heroFilter === 'featured' ? 'bg-green-500 text-black border-green-500 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-[#141414] text-yellow-400 border-gray-800 hover:border-yellow-500/50'}`}
                 >
                   <Star className="w-4 h-4 fill-current" />
-                  Hanya Yang Terpilih ({videos.filter(v => v.is_featured).length})
+                  Hanya Yang Terpilih ({featuredVideos.length})
                 </button>
               </div>
 
@@ -1028,54 +1068,57 @@ export default function AdminPage() {
 
               {/* Grid selector */}
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {paginatedVideos.map(video => (
-                  <div key={video.id} className={`relative group border transition-all ${video.is_featured ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-green-900/10' : 'border-gray-800 bg-[#111] hover:border-gray-600'}`}>
-                    <div className="aspect-video w-full bg-gray-900 relative overflow-hidden">
-                      {video.backdrop_url || video.thumbnail_url || video.poster_url ? (
-                        <img src={video.backdrop_url || video.thumbnail_url || video.poster_url} alt={video.title} className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Film className="w-6 h-6 text-gray-700" />
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm p-2 text-center">
-                        <button
-                          onClick={() => handleToggleFeature(video.id, !!video.is_featured)}
-                          className={`px-3 py-1.5 text-xs font-bold rounded flex items-center gap-1.5 transition-all cursor-pointer ${
-                            video.is_featured
-                              ? 'bg-red-600 hover:bg-red-500 text-white shadow-lg'
-                              : 'bg-green-500 hover:bg-green-400 text-black shadow-lg shadow-green-500/40'
-                          }`}
-                        >
-                          {video.is_featured ? (
-                            <>
-                              <X className="w-4 h-4" /> Hapus dari Hero
-                            </>
-                          ) : (
-                            <>
-                              <Star className="w-4 h-4 fill-black" /> + Pilih untuk Hero
-                            </>
-                          )}
-                        </button>
-                      </div>
-                      {/* Rating Badge */}
-                      <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold px-1.5 py-0.5 shadow-[0_0_5px_rgba(0,0,0,0.8)] flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> {Number(video.score || video.imdb_score || 0).toFixed(1)}
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <h3 className="font-semibold text-sm text-white line-clamp-1">{video.title}</h3>
-                      <div className="flex items-center justify-between mt-1">
-                        <p className="text-xs text-gray-500">{video.year || '-'}</p>
-                        {video.is_featured ? (
-                          <span className="text-[10px] bg-green-500 text-black px-1.5 py-0.5 font-bold">TERPILIH</span>
+                {paginatedVideos.map(video => {
+                  const isFeatured = featuredVideos.some(f => f.id === video.id) || !!video.is_featured;
+                  return (
+                    <div key={video.id} className={`relative group border transition-all ${isFeatured ? 'border-green-500 shadow-[0_0_15px_rgba(34,197,94,0.3)] bg-green-900/10' : 'border-gray-800 bg-[#111] hover:border-gray-600'}`}>
+                      <div className="aspect-video w-full bg-gray-900 relative overflow-hidden">
+                        {video.backdrop_url || video.thumbnail_url || video.poster_url ? (
+                          <img src={video.backdrop_url || video.thumbnail_url || video.poster_url} alt={video.title} className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-[10px] text-gray-500">Belum Terpilih</span>
+                          <div className="w-full h-full flex items-center justify-center">
+                            <Film className="w-6 h-6 text-gray-700" />
+                          </div>
                         )}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm p-2 text-center">
+                          <button
+                            onClick={() => handleToggleFeature(video.id, isFeatured)}
+                            className={`px-3 py-1.5 text-xs font-bold rounded flex items-center gap-1.5 transition-all cursor-pointer ${
+                              isFeatured
+                                ? 'bg-red-600 hover:bg-red-500 text-white shadow-lg'
+                                : 'bg-green-500 hover:bg-green-400 text-black shadow-lg shadow-green-500/40'
+                            }`}
+                          >
+                            {isFeatured ? (
+                              <>
+                                <X className="w-4 h-4" /> Hapus dari Hero
+                              </>
+                            ) : (
+                              <>
+                                <Star className="w-4 h-4 fill-black" /> + Pilih untuk Hero
+                              </>
+                            )}
+                          </button>
+                        </div>
+                        {/* Rating Badge */}
+                        <div className="absolute top-2 right-2 bg-black/80 backdrop-blur-md border border-white/10 text-white text-[10px] font-bold px-1.5 py-0.5 shadow-[0_0_5px_rgba(0,0,0,0.8)] flex items-center gap-1">
+                          <Star className="w-3 h-3 fill-yellow-500 text-yellow-500" /> {Number(video.score || video.imdb_score || 0).toFixed(1)}
+                        </div>
+                      </div>
+                      <div className="p-3">
+                        <h3 className="font-semibold text-sm text-white line-clamp-1">{video.title}</h3>
+                        <div className="flex items-center justify-between mt-1">
+                          <p className="text-xs text-gray-500">{video.year || '-'}</p>
+                          {isFeatured ? (
+                            <span className="text-[10px] bg-green-500 text-black px-1.5 py-0.5 font-bold">TERPILIH</span>
+                          ) : (
+                            <span className="text-[10px] text-gray-500">Belum Terpilih</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {paginatedVideos.length === 0 && (
