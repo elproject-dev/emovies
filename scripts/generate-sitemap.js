@@ -23,18 +23,31 @@ async function generateSitemap() {
       const supabase = createClient(supabaseUrl, supabaseKey);
       const { data: videos, error } = await supabase
         .from('videos')
-        .select('id, updated_at, created_at')
+        .select('id, title, description, thumbnail_url, poster_url, backdrop_url, updated_at, created_at')
         .limit(1000);
 
       if (!error && videos && videos.length > 0) {
-        console.log(`Adding ${videos.length} movie URLs to sitemap...`);
+        console.log(`Adding ${videos.length} movie URLs with video metadata to sitemap...`);
         videos.forEach(v => {
           const lastMod = v.updated_at || v.created_at || new Date().toISOString();
+          let thumb = v.thumbnail_url || v.poster_url || v.backdrop_url || `${baseUrl}/emo.png`;
+          if (thumb.startsWith('//')) thumb = 'https:' + thumb;
+          
+          const cleanTitle = (v.title || 'Nonton Film').replace(/\]\]>/g, '').trim();
+          const cleanDesc = (v.description || `Nonton ${cleanTitle} subtitle Indonesia online gratis di EMOVIES`).replace(/\]\]>/g, '').slice(0, 1000).trim();
+
           pages.push({
             loc: `${baseUrl}/movie/watch?id=${v.id}`,
             lastmod: lastMod.split('T')[0],
-            priority: '0.7',
+            priority: '0.8',
             changefreq: 'weekly',
+            video: {
+              title: cleanTitle,
+              description: cleanDesc,
+              thumbnailLoc: thumb,
+              playerLoc: `${baseUrl}/movie/watch?id=${v.id}`,
+              publicationDate: lastMod,
+            }
           });
         });
       }
@@ -44,14 +57,25 @@ async function generateSitemap() {
   }
 
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${pages
   .map(
     p => `  <url>
     <loc>${p.loc}</loc>
     ${p.lastmod ? `<lastmod>${p.lastmod}</lastmod>` : `<lastmod>${new Date().toISOString().split('T')[0]}</lastmod>`}
     <changefreq>${p.changefreq}</changefreq>
-    <priority>${p.priority}</priority>
+    <priority>${p.priority}</priority>${
+      p.video
+        ? `
+    <video:video>
+      <video:thumbnail_loc>${p.video.thumbnailLoc}</video:thumbnail_loc>
+      <video:title><![CDATA[${p.video.title}]]></video:title>
+      <video:description><![CDATA[${p.video.description}]]></video:description>
+      <video:player_loc>${p.video.playerLoc}</video:player_loc>
+      <video:publication_date>${p.video.publicationDate}</video:publication_date>
+    </video:video>`
+        : ''
+    }
   </url>`
   )
   .join('\n')}
