@@ -8,9 +8,8 @@ import Link from 'next/link';
 import { LoadingSpinner } from '@/components/loading-spinner';
 
 const VideoCard = ({ video }: { video: any }) => {
-  const router = useRouter();
   return (
-    <div onClick={() => router.push(`/movie/watch?id=${video.id}`)} className="group flex flex-col gap-3 cursor-pointer w-full">
+    <Link href={`/movie/watch?id=${video.id}`} className="group flex flex-col gap-3 cursor-pointer w-full">
 
       {/* Image Frame with Neon Glow */}
       <div className="relative aspect-[2/3] overflow-hidden bg-[#1f1f1f] border-3 border-green-500/60 shadow-[0_0_10px_rgba(34,197,94,0.3)] group-hover:border-green-400 group-hover:shadow-[0_0_20px_rgba(34,197,94,0.6)] transition-all duration-300">
@@ -56,7 +55,7 @@ const VideoCard = ({ video }: { video: any }) => {
         </div>
       </div>
 
-    </div>
+    </Link>
   );
 };
 
@@ -320,18 +319,24 @@ const selectHeroVideos = (videoList: any[]) => {
   }
 };
 
-export default function Home() {
+export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) {
   const searchParams = useSearchParams();
   const query = searchParams?.get('q') || '';
   const typeFilter = searchParams?.get('type') || '';
   const genreFilter = searchParams?.get('genre') || '';
   const viewFilter = searchParams?.get('view') || '';
 
-  const [videos, setVideos] = useState<any[]>([]);
-  const [heroVideos, setHeroVideos] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [videos, setVideos] = useState<any[]>(initialVideos);
+  const [heroVideos, setHeroVideos] = useState<any[]>(() => selectHeroVideos(initialVideos));
+  const [isLoading, setIsLoading] = useState(initialVideos.length === 0);
 
   useEffect(() => {
+    const isFiltered = Boolean(query || typeFilter || genreFilter || viewFilter);
+    // Jika tidak ada filter dan data initialVideos sudah ada, gunakan data yang sudah ada
+    if (!isFiltered && initialVideos.length > 0 && videos.length === initialVideos.length) {
+      return;
+    }
+
     const fetchVideos = async () => {
       setIsLoading(true);
       try {
@@ -488,6 +493,30 @@ export default function Home() {
           {!isLoading && <p className="text-gray-500">No movies found.</p>}
         </div>
       )}
+
+      {/* Rich SEO Content Section for Search Engines & Visitors */}
+      <section className="mt-16 border-t border-gray-800/80 pt-10 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto text-gray-400 text-xs sm:text-sm leading-relaxed">
+        <h2 className="text-base sm:text-xl font-bold text-white mb-3">
+          EMOVIES - Nonton Film &amp; TV Series Streaming Sub Indo Gratis
+        </h2>
+        <p className="mb-4">
+          Selamat datang di <strong>EMOVIES</strong>, platform nonton film dan streaming serial TV online terlengkap dengan subtitle Indonesia gratis. Nikmati jutaan pilihan film bioskop terbaru, drama Korea sub indo, film laga (action), anime terbaru, horor, komedi, dan romance dengan kualitas visual jernih HD hingga 4K serta server streaming cepat tanpa buffering.
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6 text-gray-300">
+          <div className="bg-[#121212] p-4 rounded-xl border border-gray-800/60">
+            <h3 className="font-semibold text-white text-sm mb-1.5 text-green-400">Streaming Lancar &amp; Cepat</h3>
+            <p className="text-xs text-gray-400">Didukung server berkecepatan tinggi untuk kenyamanan streaming film favorit Anda kapan saja dan di mana saja.</p>
+          </div>
+          <div className="bg-[#121212] p-4 rounded-xl border border-gray-800/60">
+            <h3 className="font-semibold text-white text-sm mb-1.5 text-green-400">Subtitle Indonesia Terlengkap</h3>
+            <p className="text-xs text-gray-400">Seluruh film dan series dilengkapi terjemahan subtitle bahasa Indonesia yang rapi dan akurat.</p>
+          </div>
+          <div className="bg-[#121212] p-4 rounded-xl border border-gray-800/60">
+            <h3 className="font-semibold text-white text-sm mb-1.5 text-green-400">Koleksi Terupdate 2026</h3>
+            <p className="text-xs text-gray-400">Selalu update film box office bioskop terbaru, drakor, serial barat, hingga episode anime yang sedang tayang.</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
