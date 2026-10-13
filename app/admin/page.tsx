@@ -901,9 +901,7 @@ export default function AdminPage() {
               </h2>
             </div>
 
-            <p className="text-gray-400 mb-6 max-w-3xl">
-              Kelola film yang disorot pada Hero Banner halaman utama. Semua film yang berstatus <strong>TERPILIH</strong> dikumpulkan bersama di dalam satu wadah khusus di bawah ini agar mudah dipantau.
-            </p>
+
 
             {/* WADAH UTAMA: Film Terpilih Hero Banner (Semua film terpilih digabungkan di 1 wadah ini) */}
             <div className="mb-10 p-5 rounded-xl bg-[#141414] border-2 border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.15)]">
@@ -1087,11 +1085,10 @@ export default function AdminPage() {
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm p-2 text-center">
                           <button
                             onClick={() => handleToggleFeature(video.id, isFeatured)}
-                            className={`px-3 py-1.5 text-xs font-bold rounded flex items-center gap-1.5 transition-all cursor-pointer ${
-                              isFeatured
+                            className={`px-3 py-1.5 text-xs font-bold rounded flex items-center gap-1.5 transition-all cursor-pointer ${isFeatured
                                 ? 'bg-red-600 hover:bg-red-500 text-white shadow-lg'
                                 : 'bg-green-500 hover:bg-green-400 text-black shadow-lg shadow-green-500/40'
-                            }`}
+                              }`}
                           >
                             {isFeatured ? (
                               <>

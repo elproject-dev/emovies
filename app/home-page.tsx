@@ -142,7 +142,7 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
 
   return (
     <div
-      className="relative w-full h-[55vh] md:h-[80vh] group mb-12 select-none"
+      className="relative w-full h-[55vh] md:h-[80vh] group mb-12 select-none animate-in fade-in duration-300"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -160,6 +160,7 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
                 src={video.backdrop_url || video.thumbnail_url || video.poster_url}
                 alt={video.title}
                 className="w-full h-full object-cover"
+                loading={idx === 0 ? "eager" : "lazy"}
               />
               {/* Gradient Overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent"></div>
@@ -344,14 +345,19 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
   const viewFilter = searchParams?.get('view') || '';
 
   const [videos, setVideos] = useState<any[]>(initialVideos);
-  // Inisialisasi deterministik 10 film untuk mencegah hydration error SSR
-  const [heroVideos, setHeroVideos] = useState<any[]>(() => selectHeroVideos(initialVideos, false, 10));
+  const [heroVideos, setHeroVideos] = useState<any[]>([]);
+  const [isHeroMounted, setIsHeroMounted] = useState(false);
+  const heroInitialized = useRef(false);
   const [isLoading, setIsLoading] = useState(initialVideos.length === 0);
 
-  // Randomisasi 10 film hero banner dari wadah pada sisi klien saat halaman dimuat / di-refresh
+  // Inisialisasi 10 film hero banner acak dari wadah satu kali per pemuatan halaman (mencegah flashback)
   useEffect(() => {
-    const source = videos.length > 0 ? videos : initialVideos;
-    setHeroVideos(selectHeroVideos(source, true, 10));
+    if (!heroInitialized.current) {
+      const source = videos.length > 0 ? videos : initialVideos;
+      setHeroVideos(selectHeroVideos(source, true, 10));
+      heroInitialized.current = true;
+      setIsHeroMounted(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -403,9 +409,13 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
             }
           }
 
-          const selectedHero = selectHeroVideos(merged, true, 10);
           setVideos(merged);
-          setHeroVideos(selectedHero);
+          // Hanya inisialisasi jika belum terpasang, jangan menimpa hero banner yang sedang aktif agar TIDAK TERJADI FLASHBACK
+          if (!heroInitialized.current) {
+            setHeroVideos(selectHeroVideos(merged, true, 10));
+            heroInitialized.current = true;
+            setIsHeroMounted(true);
+          }
           setIsLoading(false);
           return;
         }
@@ -413,9 +423,7 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
         const { data, error } = await request;
         if (error) throw error;
         const list = data || [];
-        const selectedHero = selectHeroVideos(list, true, 10);
         setVideos(list);
-        setHeroVideos(selectedHero);
       } catch (err) {
         console.error('Error fetching videos:', err);
       } finally {
@@ -492,7 +500,22 @@ export default function Home({ initialVideos = [] }: { initialVideos?: any[] }) 
             </div>
           ) : (
             <>
-              <HeroCarousel videos={heroVideos} />
+              {isHeroMounted ? (
+                <HeroCarousel videos={heroVideos} />
+              ) : (
+                <div className="relative w-full h-[55vh] md:h-[80vh] bg-[#111] mb-12 border-b-3 border-green-500/30 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent" />
+                  <div className="absolute inset-0 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-12 md:pb-20">
+                    <div className="w-24 h-5 bg-white/5 mb-3" />
+                    <div className="w-2/3 max-w-lg h-10 bg-white/5 mb-4" />
+                    <div className="w-1/2 max-w-md h-4 bg-white/5 mb-6" />
+                    <div className="flex gap-3">
+                      <div className="w-28 h-9 bg-green-500/20" />
+                      <div className="w-28 h-9 bg-white/5" />
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="pt-4">
                 {manualFeaturedVideos.length > 0 && (
                   <VideoRow title="Awesome Movies" videos={manualFeaturedVideos} viewAllLink="/?view=featured" />
