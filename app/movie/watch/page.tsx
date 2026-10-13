@@ -103,22 +103,40 @@ function WatchContent() {
   }, []);
 
   // SEO: Update dynamic document title, meta description & Schema.org JSON-LD
+  const movieTitle = video?.title || '';
+  const movieYear = video?.year ? ` (${video.year})` : '';
+  const pageTitle = movieTitle
+    ? `Nonton ${movieTitle}${movieYear} Sub Indo Full Movie Streaming - EMOVIES`
+    : 'EMOVIES - Nonton Film & TV Series Sub Indo Streaming Gratis';
+  const pageSnippet = video?.description ? video.description.slice(0, 160) : `Nonton film ${movieTitle} streaming subtitle indonesia gratis`;
+  const metaDescContent = movieTitle
+    ? `Nonton ${movieTitle}${movieYear} sub indo full movie streaming gratis di EMOVIES. ${pageSnippet}`
+    : 'Nonton jutaan Film dan TV Series gratis subtitle Indonesia dengan streaming lancar dan kualitas jernih.';
+
   useEffect(() => {
     if (!video?.title) return;
 
-    const movieTitle = video.title;
-    const movieYear = video.year ? ` (${video.year})` : '';
-    document.title = `Nonton ${movieTitle}${movieYear} Sub Indo Full Movie Streaming - EMOVIES`;
-
-    // Dynamic meta description
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (!metaDesc) {
-      metaDesc = document.createElement('meta');
-      metaDesc.setAttribute('name', 'description');
-      document.head.appendChild(metaDesc);
+    // Force update <title> DOM element for crawlers and document.title
+    const titleEl = document.querySelector('title');
+    if (titleEl) {
+      titleEl.innerText = pageTitle;
+      titleEl.textContent = pageTitle;
     }
-    const snippet = video.description ? video.description.slice(0, 160) : `Nonton film ${movieTitle} streaming subtitle indonesia gratis`;
-    metaDesc.setAttribute('content', `Nonton ${movieTitle}${movieYear} sub indo full movie streaming gratis di EMOVIES. ${snippet}`);
+    document.title = pageTitle;
+
+    // Deduplicate and update meta description
+    const allMetaDescs = document.querySelectorAll('meta[name="description"]');
+    if (allMetaDescs.length > 0) {
+      allMetaDescs[0].setAttribute('content', metaDescContent);
+      for (let i = 1; i < allMetaDescs.length; i++) {
+        allMetaDescs[i].remove();
+      }
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'description';
+      meta.content = metaDescContent;
+      document.head.appendChild(meta);
+    }
 
     // Dynamic canonical link
     let canonicalLink = document.querySelector('link[rel="canonical"]');
@@ -127,7 +145,7 @@ function WatchContent() {
       canonicalLink.setAttribute('rel', 'canonical');
       document.head.appendChild(canonicalLink);
     }
-    canonicalLink.setAttribute('href', `${window.location.origin}/movie/watch?id=${video.id}`);
+    canonicalLink.setAttribute('href', `https://emovies.elproject.studio/movie/watch?id=${video.id}`);
 
     // Dynamic Schema.org JSON-LD
     const scriptId = 'movie-rich-snippet';
@@ -368,6 +386,13 @@ function WatchContent() {
 
   return (
     <div className="w-full min-h-screen bg-[#0a0a0a] text-white">
+      {video?.title && (
+        <>
+          <title>{pageTitle}</title>
+          <meta name="description" content={metaDescContent} />
+          <link rel="canonical" href={`https://emovies.elproject.studio/movie/watch?id=${video.id}`} />
+        </>
+      )}
       {!isPlaying ? (
         <div className="relative w-full h-screen flex flex-col justify-start pt-[25vh] md:pt-[28vh]">
           {/* Backdrop Image */}
