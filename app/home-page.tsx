@@ -142,7 +142,7 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
 
   return (
     <div
-      className="relative w-full h-[55vh] md:h-[80vh] group mb-12 select-none animate-in fade-in duration-300"
+      className="relative w-full aspect-square sm:aspect-auto sm:h-[70vh] md:h-[80vh] landscape:aspect-auto landscape:h-screen landscape:min-h-[420px] md:landscape:h-[85vh] md:landscape:min-h-[500px] group mb-8 md:mb-12 select-none animate-in fade-in duration-300"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -162,15 +162,16 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
                 className="w-full h-full object-cover"
                 loading={idx === 0 ? "eager" : "lazy"}
               />
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent"></div>
+              {/* Gradient Overlays: Darken left for text readability, fade bottom into background */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a]/90 via-[#0a0a0a]/50 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent"></div>
 
-              {/* Content Aligned with Max-Width */}
-              <div className="absolute inset-0 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-end pb-12 md:pb-20 pointer-events-none">
-                <div className="w-full md:w-2/3 pointer-events-auto">
+              {/* Content Aligned in Middle-Left (Portrait & Landscape) */}
+              <div className="absolute inset-0 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center pt-14 sm:pt-20 md:pt-24 pb-8 sm:pb-14 md:pb-16 pointer-events-none">
+                <div className="w-full md:w-3/5 lg:w-1/2 max-w-2xl pointer-events-auto">
                   {/* Meta Badges */}
                   {(video.year || video.score || video.imdb_score) && (
-                    <div className="flex items-center gap-2 mb-2.5">
+                    <div className="flex items-center gap-2 mb-1.5 sm:mb-2 md:mb-2.5">
                       {video.year && (
                         <span className="text-gray-300 text-xs font-semibold bg-black/50 px-2 py-0.5 border border-white/10">
                           {video.year}
@@ -186,18 +187,18 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
                     </div>
                   )}
 
-                  <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold text-white mb-2 md:mb-4 drop-shadow-[0_0_10px_rgba(34,197,94,0.5)] line-clamp-2">
+                  <h2 className="text-xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-1.5 sm:mb-2 md:mb-4 drop-shadow-[0_0_10px_rgba(34,197,94,0.5)] line-clamp-2">
                     {video.title}
                   </h2>
-                  <p className="text-gray-300 text-xs sm:text-sm md:text-base line-clamp-2 md:line-clamp-3 mb-4 md:mb-6 max-w-2xl">
+                  <p className="text-gray-300 text-xs sm:text-sm md:text-base line-clamp-2 md:line-clamp-3 mb-2.5 sm:mb-3 md:mb-6 max-w-2xl">
                     {video.description || "No description available for this movie."}
                   </p>
                   <div className="flex items-center gap-2 md:gap-3">
-                    <Link href={`/movie/watch?id=${video.id}&play=true`} className="bg-green-500 hover:bg-green-400 text-white font-bold text-xs sm:text-sm md:text-base py-2 px-4 md:py-3 md:px-8 flex items-center gap-1.5 md:gap-2 transition-all shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.8)]">
-                      <Play className="w-4 h-4 md:w-5 md:h-5 fill-white" /> Play Now
+                    <Link href={`/movie/watch?id=${video.id}&play=true`} className="bg-green-500 hover:bg-green-400 text-white font-bold text-xs sm:text-sm md:text-base py-1.5 px-3 sm:py-2 sm:px-4 md:py-3 md:px-8 flex items-center gap-1.5 md:gap-2 transition-all shadow-[0_0_15px_rgba(34,197,94,0.4)] hover:shadow-[0_0_25px_rgba(34,197,94,0.8)]">
+                      <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 fill-white" /> Play Now
                     </Link>
-                    <Link href={`/movie/watch?id=${video.id}`} className="bg-[#222]/80 hover:bg-[#333] backdrop-blur-md border border-gray-600 text-white font-medium text-xs sm:text-sm md:text-base py-2 px-4 md:py-3 md:px-8 flex items-center gap-1.5 md:gap-2 transition-colors">
-                      <Info className="w-4 h-4 md:w-5 md:h-5" /> More Info
+                    <Link href={`/movie/watch?id=${video.id}`} className="bg-[#222]/80 hover:bg-[#333] backdrop-blur-md border border-gray-600 text-white font-medium text-xs sm:text-sm md:text-base py-1.5 px-3 sm:py-2 sm:px-4 md:py-3 md:px-8 flex items-center gap-1.5 md:gap-2 transition-colors">
+                      <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" /> More Info
                     </Link>
                   </div>
                 </div>
@@ -207,10 +208,8 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
         </div>
       </div>
 
-
-
       {/* Navigation Dots & Next Button */}
-      <div className="absolute bottom-2.5 sm:bottom-6 left-0 right-0 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between sm:justify-start gap-3">
+      <div className="absolute bottom-2 mb-2 sm:bottom-6 landscape:bottom-2 left-0 right-0 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between sm:justify-start gap-3">
         <div className="flex items-center gap-1.5 sm:gap-2 max-w-[calc(100%-90px)] sm:max-w-xl overflow-x-auto no-scrollbar py-1">
           {videos.map((_, idx) => {
             const isActive = currentIndex === idx || (currentIndex === extendedVideos.length - 1 && idx === 0);
@@ -231,10 +230,10 @@ const HeroCarousel = ({ videos }: { videos: any[] }) => {
         {videos.length > 1 && (
           <button
             onClick={handleNext}
-            className="w-7 h-7 sm:w-6 sm:h-6 rounded-full bg-black/60 hover:bg-green-500 text-gray-300 hover:text-black border border-white/20 hover:border-green-400 flex items-center justify-center transition-all backdrop-blur-md shadow-md sm:ml-1 cursor-pointer"
+            className="w-5 h-5 sm:w-5 sm:h-5 lg:w-7 lg:h-7 rounded-full bg-black/60 hover:bg-green-500 text-gray-300 hover:text-black border border-white/20 hover:border-green-400 flex items-center justify-center transition-all backdrop-blur-md shadow-md sm:ml-1 cursor-pointer"
             aria-label="Next Slide"
           >
-            <ChevronRight className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+            <ChevronRight className="w-3.5 h-3.5 sm:w-3.5 sm:h-3.5" />
           </button>
         )}
       </div>

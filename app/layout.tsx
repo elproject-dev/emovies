@@ -149,7 +149,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="id"
-      className={`${outfit.variable} h-full antialiased`}
+      className={`${outfit.variable} h-full antialiased bg-[#0a0a0a]`}
+      style={{ backgroundColor: '#0a0a0a' }}
       suppressHydrationWarning
     >
       <head>
@@ -161,7 +162,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <body suppressHydrationWarning className={`${outfit.className} min-h-full flex flex-col bg-[#0a0a0a] text-white`}>
+      <body suppressHydrationWarning className={`${outfit.className} min-h-full flex flex-col bg-[#0a0a0a] text-white`} style={{ backgroundColor: '#0a0a0a' }}>
         <GoogleAnalytics />
         <AppBackButtonHandler />
         <WebMCPProvider />

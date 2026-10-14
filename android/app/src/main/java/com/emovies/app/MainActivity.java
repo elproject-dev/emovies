@@ -47,10 +47,12 @@ public class MainActivity extends BridgeActivity {
         // Make sure the content draws behind the status bar and nav bar
         WindowCompat.setDecorFitsSystemWindows(window, false);
         window.setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        window.setNavigationBarColor(android.graphics.Color.parseColor("#0a0a0a"));
+        window.setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.parseColor("#0a0a0a")));
         
-        // This ensures the WebView's background is transparent if needed
+        // This ensures the WebView's background is dark
         if (this.bridge != null && this.bridge.getWebView() != null) {
-            this.bridge.getWebView().setBackgroundColor(android.graphics.Color.TRANSPARENT);
+            this.bridge.getWebView().setBackgroundColor(android.graphics.Color.parseColor("#0a0a0a"));
         }
     }
 
@@ -142,6 +144,7 @@ public class MainActivity extends BridgeActivity {
 
         if (swipeRefreshLayout == null) {
             swipeRefreshLayout = new SwipeRefreshLayout(this);
+            swipeRefreshLayout.setBackgroundColor(android.graphics.Color.parseColor("#0a0a0a"));
             ViewGroup parent = (ViewGroup) webView.getParent();
             parent.removeView(webView);
             swipeRefreshLayout.addView(webView);

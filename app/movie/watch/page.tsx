@@ -443,7 +443,7 @@ function WatchContent() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-[#0a0a0a] text-white">
+    <div className="w-full min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden">
       {video?.title && (
         <>
           <title>{pageTitle}</title>
@@ -458,39 +458,40 @@ function WatchContent() {
         </>
       )}
       {!isPlaying ? (
-        <div className="relative w-full h-screen flex flex-col justify-start pt-[25vh] md:pt-[28vh]">
+        <div className="relative w-full min-h-screen bg-[#0a0a0a] flex flex-col justify-center pt-24 sm:pt-28 md:pt-32 pb-16">
           {/* Backdrop Image */}
-          <div className="absolute inset-0 w-full h-full">
+          <div className="absolute inset-0 w-full h-full pointer-events-none bg-[#0a0a0a] overflow-hidden">
             <img
               src={video.backdrop_url || video.thumbnail_url || video.poster_url}
               alt={`Nonton ${video.title} (${video.year || '2024'}) Sub Indo Full Movie Streaming`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover object-top"
             />
             {/* Gradient Overlays: Darken left for text readability, fade bottom to background color */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/85 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent"></div>
           </div>
 
-          {/* Frame Tombol Kembali (Terpisah dari Judul agar bisa diatur tingginya) */}
-          <div className="absolute top-[12vh] md:top-[15vh] left-0 right-0 mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-8 z-20 pointer-events-none">
-            <button
-              type="button"
-              onClick={handleBack}
-              aria-label="Kembali ke halaman sebelumnya"
-              className="inline-flex w-12 h-12 rounded-full bg-black/60 hover:bg-green-500 hover:text-black flex items-center justify-center transition-all border border-white/10 hover:border-green-400 backdrop-blur-md pointer-events-auto group cursor-pointer"
-            >
-              <ArrowLeft className="w-6 h-6 text-white group-hover:text-black transition-colors" />
-            </button>
-          </div>
+          {/* Content Aligned in Middle-Left */}
+          <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-start text-left">
+            <div className="w-full md:w-3/4 lg:w-1/2 flex flex-col items-start text-left">
+              {/* Tombol Kembali tepat di atas judul */}
+              <div className="mb-4 sm:mb-6">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  aria-label="Kembali ke halaman sebelumnya"
+                  className="inline-flex w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-transparent hover:bg-green-500 hover:text-black flex items-center justify-center transition-all border-none hover:border-green-400 backdrop-blur-md text-white group cursor-pointer active:scale-95 shadow-lg"
+                  title="Kembali"
+                >
+                  <ArrowLeft className="w-5 h-5 text-white group-hover:text-black transition-colors" />
+                </button>
+              </div>
 
-          {/* Content */}
-          <div className="relative z-10 w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="w-full md:w-3/4 lg:w-1/2">
-              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-[0_0_15px_rgba(34,197,94,0.6)]">
+              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 drop-shadow-[0_0_15px_rgba(34,197,94,0.6)] text-left">
                 {video.title}
               </h1>
 
-              <div className="flex items-center gap-4 text-sm md:text-base text-gray-300 mb-2 font-medium">
+              <div className="flex items-center justify-start gap-3 sm:gap-4 text-sm md:text-base text-gray-300 mb-2 font-medium flex-wrap">
                 <span className="border border-green-500/40 text-green-400 px-2 py-0.5 text-xs">
                   {(video.score || video.imdb_score) ? `⭐ ${Number(video.score || video.imdb_score).toFixed(1)}` : 'NR'}
                 </span>
@@ -499,19 +500,19 @@ function WatchContent() {
               </div>
 
               {video.genre && (
-                <div className="flex items-center flex-wrap gap-2 text-sm text-gray-400 mb-6">
+                <div className="flex items-center justify-start flex-wrap gap-2 text-sm text-gray-400 mb-6">
                   <span>{video.genre}</span>
                 </div>
               )}
 
-              <p className="text-gray-300 text-sm md:text-lg mb-8 leading-relaxed">
+              <p className="text-gray-300 text-sm md:text-lg mb-8 leading-relaxed max-w-3xl text-left">
                 {video.description || "No description available for this content."}
               </p>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-start gap-4">
                 <button
                   onClick={() => setIsPlaying(true)}
-                  className="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-6 md:py-4 md:px-10 rounded-none flex items-center gap-2 md:gap-3 transition-all shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.8)] text-base md:text-lg"
+                  className="bg-green-500 hover:bg-green-400 text-white font-bold py-2.5 px-8 md:py-4 md:px-10 rounded-none flex items-center gap-2 md:gap-3 transition-all shadow-[0_0_20px_rgba(34,197,94,0.4)] hover:shadow-[0_0_30px_rgba(34,197,94,0.8)] text-base md:text-lg cursor-pointer"
                 >
                   <Play className="w-5 h-5 md:w-6 md:h-6 fill-white" /> PLAY MOVIES
                 </button>
@@ -523,56 +524,57 @@ function WatchContent() {
         /* Video Player Container */
         <div
           ref={playerRef}
-          className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center select-none"
+          className="fixed inset-0 z-[100] bg-transparent flex flex-col items-center justify-center select-none"
           style={{ overscrollBehavior: 'none', touchAction: 'pan-x pan-y' }}
           onMouseMove={resetToolbarTimer}
           onClick={resetToolbarTimer}
           onTouchStart={resetToolbarTimer}
         >
 
-          {/* Top Bar (Kembali & Judul) */}
-          <div
-            className={`absolute top-0 left-0 p-4 sm:p-6 z-[110] transition-opacity duration-300 pointer-events-none ${isToolbarVisible ? 'opacity-100' : 'opacity-0'}`}
-            style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1rem)' }}
-          >
-            <div className={`flex items-center gap-3 ${isToolbarVisible ? 'pointer-events-auto' : 'pointer-events-none'}`}>
-              <button
-                onClick={async () => {
-                  setIsPlaying(false);
-                  if (document.fullscreenElement) {
-                    await document.exitFullscreen().catch(() => { });
-                  }
-                  if (Capacitor.isNativePlatform()) {
-                    ScreenOrientation.lock({ orientation: 'portrait' }).then(() => {
-                      ScreenOrientation.unlock().catch(() => { });
-                    }).catch(() => { });
-                    StatusBar.show().catch(() => { });
-                  }
-                }}
-                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center transition-colors border border-white/10 backdrop-blur-md shadow-lg"
-                title="Kembali"
-              >
-                <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </button>
-              {video?.title && (
-                <div className="hidden md:flex flex-col drop-shadow">
-                  <span className="text-sm font-semibold text-white truncate max-w-xs">{video.title}</span>
-                  <span className="text-xs text-gray-400">
-                    {isTV ? `S${video.season || 1} E${video.episode || 1}` : (video.year || '')}
-                  </span>
-                </div>
-              )}
+          {/* Top Bar (Judul Video) */}
+          {video?.title && (
+            <div
+              className={`absolute top-0 left-3 sm:left-5 p-3 sm:p-5 z-[110] transition-opacity duration-300 pointer-events-none ${isToolbarVisible ? 'opacity-100' : 'opacity-0'}`}
+              style={{ paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)' }}
+            >
+              <div className="flex flex-col drop-shadow">
+                <span className="text-sm font-semibold text-white truncate max-w-xs md:max-w-md">{video.title}</span>
+                <span className="text-xs text-gray-400">
+                  {isTV ? `S${video.season || 1} E${video.episode || 1}` : (video.year || '')}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Middle-Left Controls (Subtitle, Server, Lock, Fullscreen) */}
+          {/* Middle-Left Controls (Kembali, Subtitle, Server, Lock, Fullscreen) */}
           <div
-            className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 sm:gap-2.5 z-[110] transition-opacity duration-300 ${
-              isToolbarVisible
-                ? 'opacity-100 pointer-events-auto'
-                : 'opacity-0 pointer-events-none'
-            }`}
+            className={`absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-2 sm:gap-2.5 z-[110] transition-opacity duration-300 ${isToolbarVisible
+              ? 'opacity-100 pointer-events-auto'
+              : 'opacity-0 pointer-events-none'
+              }`}
           >
+            {/* Back Button */}
+            <button
+              type="button"
+              onClick={async () => {
+                setIsPlaying(false);
+                if (document.fullscreenElement) {
+                  await document.exitFullscreen().catch(() => { });
+                }
+                if (Capacitor.isNativePlatform()) {
+                  ScreenOrientation.lock({ orientation: 'portrait' }).then(() => {
+                    ScreenOrientation.unlock().catch(() => { });
+                  }).catch(() => { });
+                  StatusBar.show().catch(() => { });
+                }
+              }}
+              className="w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-transparent hover:bg-transparent border-none hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
+              title="Kembali"
+              aria-label="Kembali"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-300 group-hover:text-green-400 transition-colors" />
+            </button>
+
             {/* Subtitle Button */}
             <div className="relative">
               <button
@@ -582,7 +584,7 @@ function WatchContent() {
                   setShowServerMenu(false);
                   resetToolbarTimer();
                 }}
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
+                className="w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-transparent hover:bg-transparent border-none hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
                 title="Subtitle"
                 aria-label="Subtitle"
               >
@@ -600,9 +602,7 @@ function WatchContent() {
                     setShowSubtitleMenu(false);
                     resetToolbarTimer();
                   }}
-                  className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer ${
-                    showServerMenu ? 'border-green-500 bg-black/90 shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'border-white/10 hover:border-green-500/50'
-                  }`}
+                  className={`w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-transparent hover:bg-transparent border backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer ${showServerMenu ? 'border-green-500 bg-transparent shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'border-none hover:border-green-500/50'}`}
                   title="Pilih Server"
                   aria-label="Pilih Server"
                 >
@@ -612,9 +612,9 @@ function WatchContent() {
                 {/* Server Menu Overlay (Membuka ke kanan dari tombol server tengah kiri) */}
                 {showServerMenu && (
                   <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 w-48 sm:w-56 bg-[#111]/95 backdrop-blur-xl border border-gray-800 rounded-xl shadow-2xl z-[130] overflow-hidden flex flex-col max-h-[60vh]">
-                    <div className="p-3 border-b border-gray-800 flex items-center justify-between bg-black/50">
+                    <div className="p-3 border-b border-gray-800 flex items-center justify-between bg-transparent">
                       <h3 className="text-white font-bold flex items-center gap-2 text-sm">
-                        <Database className="w-3.5 h-3.5 text-green-500" /> Pilih Server
+                        <Database className="w-4 h-4 text-green-500" /> Pilih Server
                       </h3>
                       <button onClick={() => setShowServerMenu(false)} className="text-gray-400 hover:text-white p-1 cursor-pointer">
                         <X className="w-4 h-4" />
@@ -653,7 +653,7 @@ function WatchContent() {
                               setShowServerMenu(false);
                               resetToolbarTimer();
                             }}
-                            className={`w-full text-left p-2.5 rounded-lg transition-colors text-sm font-medium flex items-center justify-between cursor-pointer ${activeServerIndex === index
+                            className={`w-full text-left p-2.5 rounded-full transition-colors text-sm font-medium flex items-center justify-between cursor-pointer ${activeServerIndex === index
                               ? 'bg-green-500/10 text-green-400 border border-green-500/20'
                               : 'text-gray-300 hover:bg-gray-800/50 border border-transparent hover:border-gray-700'
                               }`}
@@ -681,7 +681,7 @@ function WatchContent() {
                   setShowServerMenu(false);
                   setShowSubtitleMenu(false);
                 }}
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
+                className="w-8 h-8 sm:w-8 sm:w-8 rounded-full bg-transparent hover:bg-transparent border-none hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
                 title="Kunci Layar"
                 aria-label="Kunci Layar"
               >
@@ -706,7 +706,7 @@ function WatchContent() {
                     console.error("Error toggling native fullscreen:", err);
                   }
                 }}
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-black/60 hover:bg-black/80 border border-white/10 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
+                className="w-8 h-8 sm:w-8 sm:h-8 rounded-full bg-transparent hover:bg-transparent border-none hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all text-white shadow-lg group active:scale-95 cursor-pointer"
                 title="Layar Penuh"
                 aria-label="Layar Penuh"
               >
@@ -718,7 +718,7 @@ function WatchContent() {
           {/* Subtitle Menu Overlay (Membuka di sebelah dock tengah kiri) */}
           {showSubtitleMenu && (
             <div className="absolute left-32 sm:left-48 top-1/2 -translate-y-1/2 w-80 max-w-[calc(100vw-9rem)] bg-[#111]/95 backdrop-blur-xl border border-gray-800 rounded-xl shadow-2xl z-[130] overflow-hidden flex flex-col max-h-[75vh]">
-              <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-black/50">
+              <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-transparent">
                 <div className="flex items-center gap-3">
                   <h3 className="text-white font-bold flex items-center gap-2 text-sm">
                     <Captions className="w-5 h-5 text-green-500" /> Subtitle
@@ -730,7 +730,7 @@ function WatchContent() {
                       setSubtitleLang(newLang);
                       handleSearchSubtitles(newLang);
                     }}
-                    className="bg-gray-800 text-xs text-white px-2 py-1 rounded border border-gray-700 outline-none cursor-pointer"
+                    className="bg-transparent text-xs text-white px-2 py-1 rounded border border-gray-700 outline-none cursor-pointer"
                   >
                     <option value="id">Indonesia</option>
                     <option value="en">English</option>
@@ -799,7 +799,7 @@ function WatchContent() {
                 )}
               </div>
               {subtitles.length > 0 && (
-                <div className="p-3 bg-black/50 border-t border-gray-800 text-center">
+                <div className="p-3 bg-transparent border-t border-gray-800 text-center">
                   <span className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">Powered by OpenSubtitles</span>
                 </div>
               )}
@@ -809,9 +809,8 @@ function WatchContent() {
           {/* Tap-Catcher Overlay: Menangkap sentuhan saat kontrol tersembunyi agar muncul kembali */}
           {!isLocked && (
             <div
-              className={`absolute inset-0 z-[102] transition-colors ${
-                isToolbarVisible ? 'pointer-events-none' : 'pointer-events-auto cursor-pointer'
-              }`}
+              className={`absolute inset-0 z-[102] transition-colors ${isToolbarVisible ? 'pointer-events-none' : 'pointer-events-auto cursor-pointer'
+                }`}
               onClick={resetToolbarTimer}
               onTouchStart={resetToolbarTimer}
             />
@@ -820,7 +819,7 @@ function WatchContent() {
           {/* Lock Overlay: Menangkap sentuhan saat dikunci agar tidak ada yang terpencet */}
           {isLocked && (
             <div
-              className="absolute inset-0 z-[105] pointer-events-auto cursor-default bg-black/20"
+              className="absolute inset-0 z-[105] pointer-events-auto cursor-default bg-transparent"
               onClick={resetToolbarTimer}
               onTouchStart={resetToolbarTimer}
             />
@@ -836,7 +835,7 @@ function WatchContent() {
                   setIsUnlockVisible(false);
                   resetToolbarTimer();
                 }}
-                className="pointer-events-auto w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-black/70 hover:bg-black/90 border border-white/20 hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all active:scale-95 shadow-2xl text-white group cursor-pointer"
+                className="pointer-events-auto w-8 h-8 sm:w-8 sm:w-8 rounded-full bg-transparent hover:bg-transparent border-none hover:border-green-500/50 backdrop-blur-md flex items-center justify-center transition-all active:scale-95 shadow-2xl text-white group cursor-pointer"
                 title="Buka Kunci Layar"
                 aria-label="Unlock"
               >

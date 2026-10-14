@@ -4,7 +4,6 @@ import { Search, Menu, X, ChevronDown } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { trackSearch } from "@/lib/analytics";
 
 const CATEGORIES = [
@@ -88,22 +87,14 @@ export default function Topbar() {
   return (
     <>
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-colors duration-300 ${isScrolled ? 'bg-[#141414]/95 backdrop-blur-md pointer-events-auto' : 'bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none'} pb-4`}
-        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1.5rem)' }}
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-colors duration-300 ${isScrolled ? 'bg-[#141414]/95 backdrop-blur-md pointer-events-auto' : 'bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none'} pb-3 sm:pb-4 landscape:pb-2`}
+        style={{ paddingTop: 'calc(env(safe-area-inset-top) + 0.75rem)' }}
       >
         <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4 pointer-events-auto">
 
-          {/* Left: Logo */}
+          {/* Left: Brand */}
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2 group">
-              <Image
-                src="/icon.png"
-                alt="EMOVIES Logo"
-                width={36}
-                height={36}
-                className="hidden sm:block rounded-md group-hover:scale-110 transition-transform duration-200"
-                priority
-              />
               <span className="text-xl font-bold text-white block tracking-wide">
                 EMO<span className="text-green-500">VIES</span>
               </span>

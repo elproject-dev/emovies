@@ -78,6 +78,12 @@ export default function GoogleAnalytics() {
         id="google-tag-manager"
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${cleanGaId}`}
+        onError={() => {
+          // Gracefully handle case where Google Analytics is blocked by client ad-blocker
+          if (process.env.NODE_ENV === 'development') {
+            console.info('[Analytics] Google Analytics script blocked by client (AdBlocker/Shields). Continuing with internal tracking.');
+          }
+        }}
       />
       <Script
         id="google-analytics-init"
