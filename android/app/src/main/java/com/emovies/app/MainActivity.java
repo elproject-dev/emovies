@@ -73,6 +73,36 @@ public class MainActivity extends BridgeActivity {
         }
 
         @JavascriptInterface
+        public void setKeepScreenOn(final boolean keepOn) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (keepOn) {
+                            MainActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                            if (MainActivity.this.bridge != null && MainActivity.this.bridge.getWebView() != null) {
+                                MainActivity.this.bridge.getWebView().setKeepScreenOn(true);
+                            }
+                            if (swipeRefreshLayout != null) {
+                                swipeRefreshLayout.setKeepScreenOn(true);
+                            }
+                        } else {
+                            MainActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                            if (MainActivity.this.bridge != null && MainActivity.this.bridge.getWebView() != null) {
+                                MainActivity.this.bridge.getWebView().setKeepScreenOn(false);
+                            }
+                            if (swipeRefreshLayout != null) {
+                                swipeRefreshLayout.setKeepScreenOn(false);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+
+        @JavascriptInterface
         public void saveFile(String filename, String base64Content) {
             pendingFileName = filename;
             pendingFileContent = base64Content;
@@ -210,6 +240,12 @@ public class MainActivity extends BridgeActivity {
 
             @Override
             public void onShowCustomView(View view, CustomViewCallback callback) {
+                try {
+                    MainActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    if (view != null) {
+                        view.setKeepScreenOn(true);
+                    }
+                } catch (Exception ignored) {}
                 if (capClient != null) capClient.onShowCustomView(view, callback);
                 else super.onShowCustomView(view, callback);
             }
@@ -299,5 +335,17 @@ public class MainActivity extends BridgeActivity {
                 return true; 
             }
         });
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            if (this.bridge != null && this.bridge.getWebView() != null) {
+                this.bridge.getWebView().setKeepScreenOn(false);
+            }
+        } catch (Exception ignored) {
+        }
     }
 }

@@ -35,7 +35,62 @@ function WatchContent() {
   const toolbarTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const unlockTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Screen Wake Lock & Android Native keepScreenOn
+  const wakeLockRef = useRef<any>(null);
+
+  const requestWakeLock = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && 'wakeLock' in navigator && document.visibilityState === 'visible') {
+        if (!wakeLockRef.current || wakeLockRef.current.released) {
+          wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+        }
+      }
+    } catch (err) {
+      // Ignore if Wake Lock is not allowed or failed
+    }
+  };
+
+  const releaseWakeLock = async () => {
+    try {
+      if (wakeLockRef.current && !wakeLockRef.current.released) {
+        await wakeLockRef.current.release();
+      }
+    } catch (err) {
+      // Ignore
+    } finally {
+      wakeLockRef.current = null;
+    }
+  };
+
+  const setNativeKeepScreenOn = (enabled: boolean) => {
+    const applyKeepOn = () => {
+      // @ts-ignore
+      if (typeof window !== 'undefined' && window.AndroidApp && window.AndroidApp.setKeepScreenOn) {
+        try {
+          // @ts-ignore
+          window.AndroidApp.setKeepScreenOn(enabled);
+          return true;
+        } catch (err) {
+          console.error('Failed to set Android keepScreenOn:', err);
+        }
+      }
+      return false;
+    };
+
+    if (!applyKeepOn() && enabled) {
+      setTimeout(applyKeepOn, 300);
+      setTimeout(applyKeepOn, 1000);
+    }
+  };
+
   const resetToolbarTimer = () => {
+    if (isPlaying) {
+      setNativeKeepScreenOn(true);
+      if (!wakeLockRef.current || wakeLockRef.current.released) {
+        requestWakeLock();
+      }
+    }
+
     if (isLocked) {
       setIsUnlockVisible(true);
       if (unlockTimeoutRef.current) clearTimeout(unlockTimeoutRef.current);
@@ -82,6 +137,11 @@ function WatchContent() {
       const isFull = !!document.fullscreenElement;
       setIsNativeFullscreen(isFull);
 
+      if (isPlaying) {
+        setNativeKeepScreenOn(true);
+        requestWakeLock();
+      }
+
       if (!isFull && Capacitor.isNativePlatform()) {
         // If exiting fullscreen (e.g., via Android Back button), force portrait then unlock, and show status bar
         ScreenOrientation.lock({ orientation: 'portrait' }).then(() => {
@@ -95,7 +155,7 @@ function WatchContent() {
 
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
+  }, [isPlaying]);
 
   // Nonaktifkan pull-to-refresh di Android saat berada di halaman tonton / video player
   useEffect(() => {
@@ -112,6 +172,32 @@ function WatchContent() {
       }
     };
   }, []);
+
+  // Mencegah layar Android mati / terkunci otomatis saat menonton film (Screen Wake Lock & Android Native FLAG_KEEP_SCREEN_ON)
+  useEffect(() => {
+    if (isPlaying) {
+      setNativeKeepScreenOn(true);
+      requestWakeLock();
+
+      const handleVisibilityChange = () => {
+        if (document.visibilityState === 'visible' && isPlaying) {
+          setNativeKeepScreenOn(true);
+          requestWakeLock();
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        releaseWakeLock();
+        setNativeKeepScreenOn(false);
+      };
+    } else {
+      releaseWakeLock();
+      setNativeKeepScreenOn(false);
+    }
+  }, [isPlaying]);
 
   // SEO: Dynamic document title, meta description & Schema.org JSON-LD
   const movieTitle = video?.title || '';
@@ -762,7 +848,7 @@ function WatchContent() {
           <iframe
             src={vidsrcUrl}
             className="w-full h-full max-w-full max-h-full aspect-video border-none"
-            allow="encrypted-media; autoplay *; fullscreen *; picture-in-picture"
+            allow="encrypted-media; autoplay *; fullscreen *; picture-in-picture; screen-wake-lock *"
             allowFullScreen
             style={{ overscrollBehavior: 'none' }}
           />
